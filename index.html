@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Werewolf Online - Ultimate</title>
+    <title>Werewolf Online - Ultimate V3</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,62 +12,60 @@
         body {
             font-family: 'Prompt', sans-serif;
             color: #f8fafc;
-            /* ป้องกันการเด้งหรือสัดส่วนเพี้ยนเวลาเลื่อนจอในมือถือ */
             min-height: 100dvh; 
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
-            transition: background 1s ease-in-out;
+            transition: background 1.5s ease-in-out;
             background-color: #0f172a;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
+        /* Thematic Backgrounds */
         body.theme-night { background: radial-gradient(circle at 50% 0%, #1e293b, #020617 100%); }
-        body.theme-day { background: radial-gradient(circle at 50% 0%, #0ea5e9, #0f172a 100%); }
-        body.theme-blood { background: radial-gradient(circle at 50% 0%, #7f1d1d, #020617 100%); }
+        body.theme-day { background: radial-gradient(circle at 50% 0%, #0284c7, #0f172a 100%); }
+        body.theme-blood { background: radial-gradient(circle at 50% 0%, #991b1b, #020617 100%); }
 
         .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7);
         }
 
-        .screen { transition: opacity 0.4s ease, transform 0.4s ease; width: 100%; max-width: 600px; padding: 1rem; }
-        .hide-screen { opacity: 0; transform: translateY(15px) scale(0.98); pointer-events: none; position: absolute; visibility: hidden; }
+        .screen { transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); width: 100%; max-width: 600px; padding: 1rem; }
+        .hide-screen { opacity: 0; transform: translateY(30px) scale(0.95); pointer-events: none; position: absolute; visibility: hidden; }
         .show-screen { opacity: 1; transform: translateY(0) scale(1); position: relative; visibility: visible; display: flex; flex-direction: column; align-items: center; }
 
-        /* ปรับสัดส่วนการ์ดให้สมดุลสุดๆ */
-        .flip-card { 
-            width: 65vw; /* กว้าง 65% ของหน้าจอมือถือ */
-            max-width: 240px; /* แต่ไม่เกิน 240px ในคอม */
-            aspect-ratio: 2 / 3; 
-            perspective: 1500px; 
-            cursor: pointer; 
-            margin: 0 auto; 
-        }
-        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
+        /* การ์ด 3D สมบูรณ์แบบ */
+        .flip-card { width: 60vw; max-width: 220px; aspect-ratio: 2 / 3; perspective: 2000px; cursor: pointer; margin: 0 auto; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
         .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
-        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 1rem; box-shadow: 0 15px 35px rgba(0,0,0,0.6); overflow: hidden; }
-        .flip-card-front { background: linear-gradient(135deg, #1e293b, #09090b); display: flex; align-items: center; justify-content: center; border: 2px solid #334155; }
-        .flip-card-front::after { content: "WEREWOLF\Aแตะเพื่อดูไพ่"; white-space: pre; color: #ef4444; font-size: 1.25rem; font-weight: 900; letter-spacing: 1px; }
-        .flip-card-back { background-color: #000; transform: rotateY(180deg); border: 2px solid #ef4444; }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 1.25rem; box-shadow: 0 20px 40px rgba(0,0,0,0.8); overflow: hidden; }
+        .flip-card-front { background: linear-gradient(135deg, #1e293b, #09090b); display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px solid #334155; }
+        .flip-card-front .logo-mark { color: #ef4444; font-size: 2rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
+        .flip-card-front .hint { color: #94a3b8; font-size: 0.9rem; margin-top: 1rem; }
+        .flip-card-back { background-color: #000; transform: rotateY(180deg); border: 2px solid #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
         .flip-card-back img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; }
 
-        .glow-text { text-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
+        .glow-text { text-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
         
-        #toast-container { position: fixed; top: env(safe-area-inset-top, 16px); left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; width: 92%; max-width: 380px; }
-        .toast { background: rgba(15, 23, 42, 0.95); border-left: 4px solid #3b82f6; color: white; padding: 14px 16px; border-radius: 12px; transform: translateY(-150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px;}
-        .toast.show { transform: translateY(10px); }
+        /* Toast UI */
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 92%; max-width: 400px; }
+        .toast { background: rgba(2, 6, 23, 0.95); border-left: 5px solid #3b82f6; color: white; padding: 16px 20px; border-radius: 16px; transform: translateY(-150%); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-weight: 600; box-shadow: 0 15px 30px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 12px; border: 1px solid rgba(255,255,255,0.05);}
+        .toast.show { transform: translateY(0); }
         .toast.success { border-left-color: #22c55e; }
         .toast.error { border-left-color: #ef4444; }
         .toast.wolf { background: #450a0a; border-left-color: #ef4444; }
         
-        /* สัดส่วนปุ่มกด */
-        .btn-primary { width: 100%; background: linear-gradient(to right, #dc2626, #991b1b); padding: 1rem; border-radius: 1rem; font-weight: 700; font-size: 1.125rem; transition: transform 0.1s; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3); }
-        .btn-primary:active { transform: scale(0.96); }
+        /* Buttons */
+        .btn-primary { width: 100%; background: linear-gradient(135deg, #ef4444, #991b1b); padding: 1.1rem; border-radius: 1.25rem; font-weight: 800; font-size: 1.2rem; transition: all 0.2s; box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4); color: white; border: 1px solid rgba(255,255,255,0.1);}
+        .btn-primary:active { transform: scale(0.95); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4); }
+        
+        /* Scrollbar ซ่อน */
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="theme-night">
@@ -75,100 +73,131 @@
     <div id="toast-container"></div>
 
     <div id="screen-login" class="screen show-screen">
-        <div class="glass-panel p-8 md:p-10 rounded-3xl w-full text-center">
-            <h1 class="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-red-500 to-orange-600 mb-2 glow-text">WEREWOLF</h1>
-            <p class="text-slate-400 mb-8 font-medium">โรงเรียนวัดบำรุงรื่น</p>
+        <div class="glass-panel p-8 md:p-12 rounded-[2.5rem] w-full text-center">
+            <div class="inline-block animate-pulse mb-2">
+                <span class="text-6xl">🐺</span>
+            </div>
+            <h1 class="text-5xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-red-500 to-orange-500 mb-2 glow-text tracking-tight">WEREWOLF</h1>
+            <p class="text-slate-400 mb-10 font-semibold tracking-widest uppercase">Ultimate V3</p>
             
-            <input type="text" id="playerNameInput" placeholder="กรอกชื่อนักเรียน..." class="w-full mb-6 px-4 py-3.5 bg-slate-900/80 border border-slate-700 rounded-2xl focus:border-red-500 outline-none text-center text-lg font-bold text-white transition-all">
+            <input type="text" id="playerNameInput" placeholder="กรอกชื่อนักเรียน..." class="w-full mb-6 px-5 py-4 bg-slate-900 border border-slate-700 rounded-2xl focus:border-red-500 outline-none text-center text-xl font-bold text-white transition-all shadow-inner">
             <button id="btnSaveName" class="btn-primary">เข้าสู่หมู่บ้าน</button>
         </div>
     </div>
 
     <div id="screen-lobby" class="screen hide-screen" style="max-width: 800px;">
-        <div class="glass-panel p-6 md:p-8 rounded-3xl w-full">
-            <div class="flex flex-wrap justify-between items-center mb-6 gap-3 border-b border-slate-700/50 pb-5">
-                <h2 class="text-2xl font-black text-white">ระบบจัดการเกม</h2>
-                <div class="bg-slate-900/80 px-4 py-2 rounded-full border border-slate-700 flex items-center gap-3 w-full sm:w-auto justify-between">
-                    <span id="displayPlayerName" class="font-bold text-slate-200"></span>
-                    <button id="btnLogout" class="text-xs font-bold text-red-400">เปลี่ยนชื่อ</button>
+        <div class="glass-panel p-6 md:p-10 rounded-[2.5rem] w-full">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 border-b border-slate-700/50 pb-6">
+                <h2 class="text-3xl font-black text-white">จัดการห้องเล่น</h2>
+                <div class="bg-slate-900 px-5 py-2.5 rounded-full border border-slate-700 flex items-center gap-3 w-full sm:w-auto justify-between shadow-inner">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
+                        <span id="displayPlayerName" class="font-bold text-slate-200"></span>
+                    </div>
+                    <button id="btnLogout" class="text-xs font-bold text-red-400 bg-red-500/10 px-3 py-1.5 rounded-full">เปลี่ยนชื่อ</button>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
-                <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
-                    <h3 class="text-xl font-bold mb-4 text-white">👑 สร้างห้อง</h3>
-                    <input type="text" id="roomNameInput" placeholder="ชื่อห้อง..." class="w-full mb-4 px-4 py-3 bg-slate-900 rounded-xl border border-slate-700 focus:border-red-500 outline-none">
-                    <select id="playerCount" class="w-full mb-5 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                <div class="bg-slate-800/40 p-6 md:p-8 rounded-[2rem] border border-slate-700">
+                    <h3 class="text-xl font-bold mb-5 text-white flex items-center gap-2">👑 สร้างห้องใหม่</h3>
+                    <input type="text" id="roomNameInput" placeholder="ตั้งชื่อห้อง..." class="w-full mb-4 px-4 py-3.5 bg-slate-900 rounded-xl border border-slate-700 focus:border-red-500 outline-none font-medium">
+                    <select id="playerCount" class="w-full mb-6 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3.5 text-white outline-none font-medium">
                         <option value="5">วงเล็ก (5 คน)</option>
                         <option value="7">วงกลาง (7 คน)</option>
-                        <option value="10" selected>วงใหญ่ (10 คน)</option>
+                        <option value="10" selected>วงมาตรฐาน (10 คน)</option>
+                        <option value="15">วงใหญ่ (15 คน)</option>
                     </select>
-                    <button id="btnCreateRoom" class="btn-primary" style="padding: 0.8rem;">เปิดห้องใหม่</button>
+                    <button id="btnCreateRoom" class="btn-primary" style="padding: 1rem;">เปิดห้องเกม</button>
                 </div>
 
-                <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                <div class="bg-slate-800/40 p-6 md:p-8 rounded-[2rem] border border-slate-700 flex flex-col justify-between">
                     <div>
-                        <h3 class="text-xl font-bold mb-4 text-white">🤝 เข้าร่วม</h3>
-                        <input type="text" id="joinRoomCode" placeholder="รหัสห้อง 6 หลัก" class="w-full mb-5 px-4 py-4 bg-slate-900 rounded-xl border border-slate-700 focus:border-blue-500 outline-none text-center text-xl tracking-[0.2em] font-black uppercase text-blue-400">
+                        <h3 class="text-xl font-bold mb-5 text-white flex items-center gap-2">🤝 เข้าร่วมเพื่อน</h3>
+                        <input type="text" id="joinRoomCode" placeholder="กรอกรหัส 6 หลัก" class="w-full mb-6 px-4 py-4 bg-slate-900 rounded-xl border border-slate-700 focus:border-blue-500 outline-none text-center text-2xl tracking-[0.25em] font-black uppercase text-blue-400 shadow-inner">
                     </div>
-                    <button id="btnJoinRoom" class="btn-primary" style="background: linear-gradient(to right, #2563eb, #1d4ed8); padding: 0.8rem;">เข้าร่วมด่วน</button>
+                    <button id="btnJoinRoom" class="btn-primary" style="background: linear-gradient(135deg, #2563eb, #1e3a8a); box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3); padding: 1rem;">เข้าร่วมห้อง</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="screen-room" class="screen hide-screen">
-        <div class="glass-panel p-6 md:p-8 rounded-3xl w-full text-center">
-            <div class="bg-slate-900/80 px-5 py-2 rounded-full border border-slate-700 mb-4 inline-block">
-                <span class="text-slate-400 text-sm font-semibold">รหัสห้อง:</span>
-                <span id="roomIdDisplay" class="font-mono text-xl font-bold text-blue-400 ml-2 tracking-widest">---</span>
+        <div class="glass-panel p-8 md:p-10 rounded-[2.5rem] w-full text-center">
+            <div class="bg-slate-900 px-6 py-2.5 rounded-full border border-slate-700 mb-6 inline-flex items-center gap-3 shadow-inner">
+                <span class="text-slate-400 text-sm font-bold uppercase tracking-widest">รหัสห้อง</span>
+                <span id="roomIdDisplay" class="font-mono text-2xl font-black text-blue-400 tracking-widest">---</span>
             </div>
-            <h2 id="roomTitleDisplay" class="text-3xl font-black text-white mb-6">ชื่อห้อง</h2>
+            <h2 id="roomTitleDisplay" class="text-4xl font-black text-white mb-8">ชื่อห้อง</h2>
             
-            <div class="bg-slate-900/50 p-5 rounded-2xl border border-slate-700/50 mb-6 text-left">
-                <h3 class="text-sm font-bold text-slate-400 mb-3">ผู้เล่นที่เข้าร่วม (<span id="playerCountDisplay">0/0</span>)</h3>
-                <div id="playerList" class="grid grid-cols-2 gap-2"></div>
+            <div class="bg-slate-900/60 p-6 rounded-[2rem] border border-slate-700/50 mb-8 text-left">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-2">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">ผู้เข้าร่วม</h3>
+                    <span class="bg-slate-800 px-3 py-1 rounded-full text-xs font-bold text-white"><span id="playerCountDisplay">0/0</span></span>
+                </div>
+                <div id="playerList" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
             </div>
 
-            <div class="flex gap-3 flex-col sm:flex-row">
-                <button id="btnLeaveRoom" class="w-full sm:w-auto px-6 py-3.5 bg-slate-800 rounded-xl font-bold text-slate-300 border border-slate-600">ออกห้อง</button>
-                <button id="btnStartGame" class="btn-primary hidden">แจกไพ่!</button>
+            <div class="flex flex-col sm:flex-row gap-4 w-full">
+                <button id="btnLeaveRoom" class="w-full sm:w-1/3 px-6 py-4 bg-slate-800 rounded-2xl font-bold text-slate-300 border border-slate-600 transition-all active:scale-95">หนีออกห้อง</button>
+                <button id="btnStartGame" class="btn-primary w-full sm:w-2/3 hidden">สับไพ่เริ่มเกม!</button>
             </div>
-            <p id="waitingHostText" class="text-slate-400 mt-4 font-medium animate-pulse hidden">รอ Host กดเริ่มเกม...</p>
+            <p id="waitingHostText" class="text-slate-400 mt-6 font-medium animate-pulse hidden">รอหัวหน้าห้องกดเริ่มเกม...</p>
         </div>
     </div>
 
     <div id="screen-gameplay" class="screen hide-screen">
         
-        <div id="gameStatusZone" class="glass-panel p-6 rounded-3xl w-full text-center mb-5 border-t-4 border-indigo-500">
-            <span id="dayCounter" class="bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full text-xs font-bold uppercase">วันที่ 1</span>
-            <h2 id="phaseTitle" class="text-3xl font-black text-white mt-3 mb-1">กลางคืน 🌙</h2>
-            <p id="phaseDesc" class="text-slate-300 text-sm md:text-base">กำลังรอ...</p>
+        <div id="gameStatusZone" class="glass-panel p-6 rounded-[2rem] w-full text-center mb-6 border-t-4 border-indigo-500 transition-all">
+            <span id="dayCounter" class="bg-indigo-500/20 text-indigo-300 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-indigo-500/30">วันที่ 1</span>
+            <h2 id="phaseTitle" class="text-4xl font-black text-white mt-4 mb-2">กลางคืน 🌙</h2>
+            <p id="phaseDesc" class="text-slate-300 font-medium">รอระบบจัดเตรียมข้อมูล...</p>
         </div>
 
-        <div id="myCardZone" class="w-full mb-5 text-center">
+        <div id="myCardZone" class="w-full mb-8 text-center">
             <div class="flip-card" id="myCard">
                 <div class="flip-card-inner">
-                    <div class="flip-card-front"></div>
+                    <div class="flip-card-front">
+                        <div class="logo-mark">WEREWOLF</div>
+                        <div class="hint">แตะเพื่อดูบทบาทของคุณ</div>
+                    </div>
                     <div class="flip-card-back"><img id="myRoleImage" src="" alt="Role"></div>
                 </div>
             </div>
-            <p class="mt-4 text-xl md:text-2xl font-black text-white" id="myRoleName">บทบาท</p>
-        </div>
-
-        <div id="actionZone" class="glass-panel p-5 rounded-3xl w-full mb-5 border border-yellow-500/30 hidden">
-            <h3 id="actionTitle" class="text-lg font-bold mb-3 text-yellow-400 text-center">เลือกเป้าหมาย</h3>
-            <div id="targetList" class="grid grid-cols-2 gap-2 mb-4"></div>
-            <button id="btnConfirmAction" class="btn-primary hidden" style="background: linear-gradient(to right, #d97706, #b45309); padding: 0.75rem;">ยืนยัน</button>
-        </div>
-
-        <div id="aliveZone" class="bg-slate-900/80 p-5 rounded-3xl border border-slate-700 w-full text-left">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="font-bold text-slate-400 text-sm">สถานะคนในหมู่บ้าน</h3>
-                <span id="voteCountTracker" class="text-xs bg-slate-800 px-2 py-1 rounded text-slate-400 hidden"></span>
+            <div class="mt-6 flex flex-col items-center">
+                <span id="ghostBadge" class="bg-purple-600/20 text-purple-300 border border-purple-500/50 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 hidden">โหมดวิญญาณ 👻</span>
+                <p class="text-3xl font-black text-white drop-shadow-lg" id="myRoleName">บทบาท</p>
             </div>
-            <div id="aliveListUI" class="flex flex-wrap gap-2 mb-4"></div>
-            <button id="btnHostForceDay" class="w-full bg-indigo-600 py-3 rounded-xl font-bold text-sm hidden shadow-lg">👑 บังคับสว่าง (Host)</button>
+        </div>
+
+        <div id="actionZone" class="glass-panel p-6 rounded-[2rem] w-full mb-6 border border-yellow-500/30 hidden shadow-[0_0_30px_rgba(234,179,8,0.1)]">
+            <h3 id="actionTitle" class="text-xl font-black mb-4 text-yellow-400 text-center">เลือกเป้าหมาย</h3>
+            <div id="targetList" class="grid grid-cols-2 gap-3 mb-5"></div>
+            <button id="btnConfirmAction" class="btn-primary hidden" style="background: linear-gradient(135deg, #d97706, #b45309); border:none;">ยืนยันการกระทำ</button>
+        </div>
+
+        <div id="aliveZone" class="bg-slate-900/90 p-6 rounded-[2rem] border border-slate-700 w-full text-left">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-400 text-sm uppercase tracking-widest flex items-center gap-2">
+                    👥 ชาวหมู่บ้าน
+                    <span id="ghostVisionText" class="text-purple-400 text-xs hidden">(คุณเห็นไพ่ทุกคน)</span>
+                </h3>
+                <span id="voteCountTracker" class="text-xs font-bold bg-slate-800 border border-slate-600 px-3 py-1.5 rounded-lg text-slate-300 hidden"></span>
+            </div>
+            <div id="aliveListUI" class="flex flex-col gap-2 mb-6"></div>
+            
+            <div id="hostTools" class="hidden border-t border-slate-700 pt-5 mt-2">
+                <h4 class="text-xs text-slate-500 font-bold mb-3 uppercase tracking-widest">เครื่องมือผู้คุมเกม (Host)</h4>
+                <div class="flex gap-2">
+                    <button id="btnHostForceDay" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 py-3 rounded-xl font-bold text-sm text-white transition-all">ข้ามเฟส ⏭️</button>
+                    <button id="btnHostNewGame" class="flex-1 bg-red-900/50 hover:bg-red-800/80 border border-red-700 py-3 rounded-xl font-bold text-sm text-red-300 transition-all hidden">เล่นใหม่อีกรอบ 🔄</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="gameLogZone" class="bg-slate-900/50 p-5 rounded-[1.5rem] border border-slate-800 w-full text-left mt-4 max-h-[150px] overflow-y-auto">
+            <h3 class="font-bold text-slate-500 text-xs uppercase tracking-widest mb-2">ประวัติหมู่บ้าน</h3>
+            <div id="gameLogText" class="text-sm text-slate-400 flex flex-col gap-1"></div>
         </div>
 
     </div>
@@ -177,6 +206,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // Firebase Config ของคุณ
         const firebaseConfig = {
             apiKey: "AIzaSyAzA-3TJ4lcNOFUGoOVd8JhExoeIRxSsFU",
             authDomain: "wolf-ba81b.firebaseapp.com",
@@ -189,6 +219,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Global States
         let currentUser = localStorage.getItem('ww_name') || "";
         let currentRoomId = null;
         let unsubscribeRoom = null;
@@ -209,11 +240,11 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            const icon = type==='success'?'✅':type==='error'?'❌':type==='wolf'?'🐺':'🔔';
-            toast.innerHTML = `<span class="text-lg">${icon}</span> <span>${msg}</span>`;
+            const icon = type==='success'?'✅':type==='error'?'💀':type==='wolf'?'🐺':'🔔';
+            toast.innerHTML = `<span class="text-2xl">${icon}</span> <span class="text-sm md:text-base">${msg}</span>`;
             container.appendChild(toast);
             setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => { toast.classList.remove('show'); setTimeout(()=>toast.remove(),400); }, 3500);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(()=>toast.remove(),500); }, 3500);
         };
 
         const showScreen = (id) => {
@@ -224,14 +255,13 @@
             });
         };
 
-        // 🎲 ระบบสุ่ม Cryptographic Random (สุ่มแท้ 100% ไร้อคติ)
-        const cryptoShuffle = (array) => {
+        // ==========================================
+        // อัลกอริทึมสุ่มขั้นสุดยอด (Double Shuffle)
+        // ==========================================
+        const shuffleArray = (array) => {
             const arr = [...array];
             for (let i = arr.length - 1; i > 0; i--) {
-                const randomBuffer = new Uint32Array(1);
-                window.crypto.getRandomValues(randomBuffer);
-                // หารเอาเศษเพื่อหา index แบบสุ่มแท้ๆ
-                const j = randomBuffer[0] % (i + 1);
+                const j = Math.floor(Math.random() * (i + 1));
                 [arr[i], arr[j]] = [arr[j], arr[i]];
             }
             return arr;
@@ -239,67 +269,47 @@
 
         const generateDeck = (count) => {
             let deck = ["มนุษย์หมาป่า"]; 
-            if (count >= 5) deck.push("เทพพยากรณ์");
-            if (count >= 6) deck.push("บอดี้การ์ด");
+            if (count >= 4) deck.push("เทพพยากรณ์");
+            if (count >= 5) deck.push("บอดี้การ์ด");
             if (count >= 7) deck.push("มนุษย์หมาป่า");
             if (count >= 9) deck.push("นายพราน");
             if (count >= 10) deck.push("นางปีศาจ");
             while(deck.length < count) { deck.push("ชาวบ้าน"); }
-            // ใช้ระบบสุ่มขั้นสูง
-            return cryptoShuffle(deck);
+            // สับไพ่รอบที่ 1
+            return shuffleArray(deck);
         };
 
-        // --- Core Application flow remains the same, adjusted styling hooks ---
-        if(currentUser) {
-            document.getElementById('displayPlayerName').textContent = currentUser;
-            showScreen('screen-lobby');
-        } else showScreen('screen-login');
+        // --- Flow การทำงานทั่วไป ---
+        if(currentUser) { document.getElementById('displayPlayerName').textContent = currentUser; showScreen('screen-lobby'); } 
+        else showScreen('screen-login');
 
         document.getElementById('btnSaveName').addEventListener('click', () => {
             const name = document.getElementById('playerNameInput').value.trim();
-            if(name) { 
-                currentUser = name; localStorage.setItem('ww_name', name); 
-                document.getElementById('displayPlayerName').textContent = currentUser; 
-                showScreen('screen-lobby'); showToast(`พร้อมลุยแล้ว ${name}!`, 'success');
-            } else showToast('ตั้งชื่อก่อนเข้าเล่นสิครับ', 'error');
+            if(name) { currentUser = name; localStorage.setItem('ww_name', name); document.getElementById('displayPlayerName').textContent = currentUser; showScreen('screen-lobby'); showToast(`ยินดีต้อนรับ ${name}!`, 'success'); } 
+            else showToast('ตั้งชื่อนักเรียนก่อนครับ', 'error');
         });
+        document.getElementById('btnLogout').addEventListener('click', () => { localStorage.removeItem('ww_name'); currentUser = ""; document.getElementById('playerNameInput').value = ""; showScreen('screen-login'); });
 
-        document.getElementById('btnLogout').addEventListener('click', () => {
-            localStorage.removeItem('ww_name'); currentUser = "";
-            document.getElementById('playerNameInput').value = "";
-            showScreen('screen-login');
-        });
-
+        // --- ระบบห้อง ---
         const joinRoom = (roomId) => {
-            currentRoomId = roomId;
-            showScreen('screen-room');
-            document.getElementById('roomIdDisplay').textContent = roomId;
-
+            currentRoomId = roomId; showScreen('screen-room'); document.getElementById('roomIdDisplay').textContent = roomId;
             unsubscribeRoom = onSnapshot(doc(db, "rooms", roomId), (docSnap) => {
-                if(!docSnap.exists()) { showToast("ห้องนี้ปิดไปแล้ว", 'error'); leaveRoom(); return; }
-                const data = docSnap.data();
-                isHost = (data.host === currentUser);
+                if(!docSnap.exists()) { showToast("ห้องถูกลบไปแล้ว", 'error'); leaveRoom(); return; }
+                const data = docSnap.data(); isHost = (data.host === currentUser);
                 
                 if(data.status === 'waiting') {
                     document.getElementById('roomTitleDisplay').textContent = data.name;
                     document.getElementById('playerCountDisplay').textContent = `${data.players.length}/${data.maxPlayers}`;
                     document.getElementById('playerList').innerHTML = data.players.map(p => 
-                        `<div class="bg-slate-800/80 p-2.5 rounded-lg flex items-center gap-2 border ${p===data.host?'border-red-500':'border-slate-700'}">
-                            <div class="w-1.5 h-1.5 rounded-full ${p===data.host?'bg-red-500':'bg-slate-400'}"></div>
-                            <span class="font-bold truncate text-sm">${p}</span>
+                        `<div class="bg-slate-800 p-3 rounded-xl flex items-center gap-3 border ${p===data.host?'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]':'border-slate-700'}">
+                            <div class="w-2.5 h-2.5 rounded-full ${p===data.host?'bg-red-500 animate-pulse':'bg-slate-400'}"></div>
+                            <span class="font-bold text-sm text-white truncate">${p}</span>
                         </div>`
                     ).join('');
                     
-                    if(isHost) {
-                        document.getElementById('btnStartGame').classList.remove('hidden');
-                        document.getElementById('waitingHostText').classList.add('hidden');
-                    } else {
-                        document.getElementById('btnStartGame').classList.add('hidden');
-                        document.getElementById('waitingHostText').classList.remove('hidden');
-                    }
-                } else {
-                    handleGameEngine(data);
-                }
+                    if(isHost) { document.getElementById('btnStartGame').classList.remove('hidden'); document.getElementById('waitingHostText').classList.add('hidden'); } 
+                    else { document.getElementById('btnStartGame').classList.add('hidden'); document.getElementById('waitingHostText').classList.remove('hidden'); }
+                } else handleGameEngine(data);
             });
         };
 
@@ -309,140 +319,179 @@
                 name: document.getElementById('roomNameInput').value || `ห้องของ ${currentUser}`,
                 host: currentUser, maxPlayers: parseInt(document.getElementById('playerCount').value),
                 status: "waiting", players: [currentUser], alive: [currentUser],
-                roles: {}, phase: "setup", dayCount: 1, actions: {}, votes: {}, log: ""
+                roles: {}, phase: "setup", dayCount: 1, actions: {}, votes: {}, log: "สร้างห้องเรียบร้อย...", history: []
             });
             joinRoom(roomId);
         });
 
         document.getElementById('btnJoinRoom').addEventListener('click', async () => {
             const code = document.getElementById('joinRoomCode').value.toUpperCase();
-            if(!code) return showToast('ใส่รหัสก่อนนะครับ', 'error');
-            const ref = doc(db, "rooms", code);
-            const snap = await getDoc(ref);
+            if(!code) return showToast('ใส่รหัสด้วยครับ', 'error');
+            const ref = doc(db, "rooms", code); const snap = await getDoc(ref);
             if(snap.exists() && snap.data().status === 'waiting') {
                 if(!snap.data().players.includes(currentUser)) await updateDoc(ref, { players: arrayUnion(currentUser), alive: arrayUnion(currentUser) });
                 joinRoom(code);
-            } else showToast('รหัสผิด / ห้องถูกเริ่มไปแล้ว', 'error');
+            } else showToast('เข้าห้องไม่ได้ (อาจเริ่มไปแล้ว)', 'error');
         });
 
         const leaveRoom = () => { if(unsubscribeRoom) unsubscribeRoom(); currentRoomId = null; showScreen('screen-lobby'); };
         document.getElementById('btnLeaveRoom').addEventListener('click', leaveRoom);
 
+        // ==========================================
+        // การสับไพ่เมื่อ Host กดเริ่ม (แก้บัคหมาป่าถาวร)
+        // ==========================================
         document.getElementById('btnStartGame').addEventListener('click', async () => {
             const ref = doc(db, "rooms", currentRoomId);
             const snap = await getDoc(ref);
             const players = snap.data().players;
             
-            // ใช้ระบบสุ่มใหม่
-            let deck = generateDeck(players.length);
-            let roles = {};
-            players.forEach((p, i) => roles[p] = deck[i]);
+            // 1. สับไพ่
+            let shuffledDeck = generateDeck(players.length);
+            // 2. สับคนเล่น (Double Shuffle!)
+            let shuffledPlayers = shuffleArray(players); 
 
-            await updateDoc(ref, { status: "playing", phase: "night", roles: roles, log: "ทุกคนหลับตา... เข้าสู่คืนแรก" });
-            showToast('ระบบกำลังสับไพ่แบบสุ่ม 100%', 'info');
+            // 3. แจกไพ่
+            let rolesMap = {};
+            shuffledPlayers.forEach((p, i) => rolesMap[p] = shuffledDeck[i]);
+
+            await updateDoc(ref, { status: "playing", phase: "night", roles: rolesMap, log: "เกมเริ่มแล้ว คืนแรกหมู่บ้านหลับใหล...", history: ["เริ่มเกมแจกไพ่เสร็จสิ้น"] });
         });
 
+        // ==========================================
+        // เอนจิ้นควบคุมเกม
+        // ==========================================
         function handleGameEngine(data) {
             showScreen('screen-gameplay');
             currentPhase = data.phase;
             myRole = data.roles[currentUser] || "ชาวบ้าน";
             isDead = !data.alive.includes(currentUser);
 
+            // เซ็ตการ์ด & ป้ายวิญญาณ
             document.getElementById('myRoleName').textContent = myRole;
             document.getElementById('myRoleImage').src = roleImages[myRole] || "ชาวบ้าน.jpg";
-            if(isDead) document.getElementById('myRoleName').textContent = myRole + " (วิญญาณ 👻)";
+            const ghostBadge = document.getElementById('ghostBadge');
+            const ghostVisionText = document.getElementById('ghostVisionText');
+            
+            if(isDead) {
+                ghostBadge.classList.remove('hidden');
+                ghostVisionText.classList.remove('hidden');
+            } else {
+                ghostBadge.classList.add('hidden');
+                ghostVisionText.classList.add('hidden');
+            }
 
+            // เตรียม UI ทั่วไป
             const actionZone = document.getElementById('actionZone');
             const targetList = document.getElementById('targetList');
             const phaseTitle = document.getElementById('phaseTitle');
             const phaseDesc = document.getElementById('phaseDesc');
             
-            actionZone.classList.add('hidden');
-            targetList.innerHTML = '';
+            actionZone.classList.add('hidden'); targetList.innerHTML = '';
             document.getElementById('btnConfirmAction').classList.add('hidden');
             selectedTarget = null;
             document.getElementById('dayCounter').textContent = `วันที่ ${data.dayCount}`;
 
-            renderAliveList(data.players, data.alive);
+            // โชว์ History Log
+            const historyDiv = document.getElementById('gameLogText');
+            historyDiv.innerHTML = data.history.map(h => `<span>• ${h}</span>`).join('');
 
+            // จัดการ UI สถานะคน (ถ้าตาย จะเห็นบทบาททุกคน)
+            renderAliveList(data.players, data.alive, data.roles, isDead);
+
+            // โชว์เครื่องมือ Host
+            if(isHost) {
+                document.getElementById('hostTools').classList.remove('hidden');
+                const btnForce = document.getElementById('btnHostForceDay');
+                const btnNew = document.getElementById('btnHostNewGame');
+                
+                if(currentPhase === "ended") { btnForce.classList.add('hidden'); btnNew.classList.remove('hidden'); }
+                else { 
+                    btnForce.classList.remove('hidden'); btnNew.classList.add('hidden');
+                    btnForce.textContent = currentPhase === "night" ? "ข้ามไปตอนเช้า ☀️" : "เปิดโหวตแขวนคอ ⚖️";
+                    btnForce.onclick = () => {
+                        const nextPhase = currentPhase === "night" ? "day" : currentPhase === "day" ? "voting" : "night";
+                        updateDoc(doc(db, "rooms", currentRoomId), { phase: nextPhase, actions: {}, votes: {} });
+                    };
+                }
+                
+                btnNew.onclick = () => updateDoc(doc(db, "rooms", currentRoomId), { status: "waiting", phase: "setup", alive: data.players, log: "", history: [] });
+            }
+
+            // 🌙 กลางคืน
             if(currentPhase === "night") {
                 setTheme('theme-night');
                 phaseTitle.textContent = "กลางคืน 🌙";
                 phaseDesc.textContent = "บทบาทพิเศษกำลังทำงาน...";
-                document.getElementById('btnHostForceDay').classList.add('hidden');
                 document.getElementById('voteCountTracker').classList.add('hidden');
 
-                if(myRole === "มนุษย์หมาป่า" && !isDead && !data.actions[currentUser]) showToast('ตื่นขึ้นมาล่าเหยื่อ!', 'wolf');
+                if(myRole === "มนุษย์หมาป่า" && !isDead && !data.actions[currentUser]) showToast('เลือกล่าเหยื่อคืนนี้!', 'wolf');
 
                 if(!isDead && !data.actions[currentUser]) {
                     const aliveOthers = data.alive.filter(p => p !== currentUser);
                     if(myRole === "มนุษย์หมาป่า") showActionPanel("เลือกล่าเหยื่อ 🩸", aliveOthers, "kill");
                     else if (myRole === "เทพพยากรณ์") showActionPanel("เลือกส่อง 🔮", aliveOthers, "check");
                     else if (myRole === "บอดี้การ์ด") showActionPanel("เลือกคุ้มกัน 🛡️", data.alive, "protect");
-                } else if (!isDead && data.actions[currentUser]) phaseDesc.textContent = "ใช้พลังไปแล้ว รอเช้า...";
-                else if (isDead) phaseDesc.textContent = "คุณคือวิญญาณ...";
+                } else if (!isDead && data.actions[currentUser]) phaseDesc.textContent = "ใช้พลังไปแล้ว รอคนอื่น...";
+                else if (isDead) phaseDesc.textContent = "นั่งดูเพื่อนเล่นเงียบๆ 🤫";
 
                 if(isHost) processNightEnd(data);
             } 
+            // ☀️ ตอนเช้า
             else if (currentPhase === "day") {
                 setTheme(data.log.includes("ตาย") ? 'theme-blood' : 'theme-day');
                 phaseTitle.textContent = "ตอนเช้า ☀️";
-                phaseDesc.innerHTML = `<span class="font-bold text-lg text-white">${data.log}</span><br>ปรึกษากันหาหมาป่าเลย!`;
-                
-                if(isHost) {
-                    document.getElementById('btnHostForceDay').textContent = "เปิดโหวตแขวนคอ ⚖️";
-                    document.getElementById('btnHostForceDay').classList.remove('hidden');
-                    document.getElementById('btnHostForceDay').onclick = () => updateDoc(doc(db, "rooms", currentRoomId), { phase: "voting", votes: {} });
-                }
+                phaseDesc.innerHTML = `<span class="font-bold text-xl text-white">${data.log}</span><br>ทุกคนตื่นขึ้นมาปรึกษากันได้เลย!`;
             }
+            // ⚖️ โหวตประหาร
             else if (currentPhase === "voting") {
                 setTheme('theme-day');
                 phaseTitle.textContent = "โหวตประหาร ⚖️";
                 phaseDesc.textContent = "เลือกคนที่คุณคิดว่าเป็นหมาป่า";
-                document.getElementById('btnHostForceDay').classList.add('hidden');
                 
                 const voteCount = Object.keys(data.votes || {}).length;
                 const tracker = document.getElementById('voteCountTracker');
-                tracker.textContent = `โหวตแล้ว: ${voteCount}/${data.alive.length}`;
-                tracker.classList.remove('hidden');
+                tracker.textContent = `โหวตแล้ว ${voteCount}/${data.alive.length}`; tracker.classList.remove('hidden');
 
-                if(!isDead && !data.votes[currentUser]) showActionPanel("โหวตแขวนคอ", data.alive, "vote");
-                else if (!isDead) phaseDesc.textContent = `โหวตแล้ว รออีก ${data.alive.length - voteCount} คน...`;
+                if(!isDead && !data.votes[currentUser]) showActionPanel("โหวตแขวนคอ 🪢", data.alive, "vote");
+                else if (!isDead) phaseDesc.textContent = `คุณโหวตแล้ว รออีก ${data.alive.length - voteCount} คน...`;
 
                 if(isHost) processVoteEnd(data);
             }
+            // 🎊 จบเกม
             else if (currentPhase === "ended") {
                 setTheme(data.log.includes("ชาวบ้าน") ? 'theme-day' : 'theme-blood');
-                phaseTitle.textContent = "เกมจบแล้ว! 🎊";
-                phaseDesc.innerHTML = `<span class="font-bold text-xl">${data.log}</span>`;
+                phaseTitle.textContent = "จบเกม! 🎊";
+                phaseDesc.innerHTML = `<span class="font-black text-2xl">${data.log}</span>`;
             }
         }
 
-        function setTheme(themeName) {
-            document.body.classList.remove('theme-night', 'theme-day', 'theme-blood');
-            document.body.classList.add(themeName);
-        }
+        function setTheme(themeName) { document.body.classList.remove('theme-night', 'theme-day', 'theme-blood'); document.body.classList.add(themeName); }
 
-        function renderAliveList(allPlayers, alivePlayers) {
+        function renderAliveList(allPlayers, alivePlayers, rolesMap, showAllRoles) {
             document.getElementById('aliveListUI').innerHTML = allPlayers.map(p => {
                 const isAlive = alivePlayers.includes(p);
-                return `<span class="px-2.5 py-1 rounded text-sm font-bold border ${isAlive ? 'bg-slate-800 border-slate-600' : 'bg-red-900/30 border-red-900 text-red-500 line-through opacity-60'}">${p}</span>`;
+                const roleText = showAllRoles ? `<span class="text-xs ml-2 text-indigo-300">(${rolesMap[p]})</span>` : "";
+                return `
+                <div class="flex items-center justify-between p-3 rounded-xl border ${isAlive ? 'bg-slate-800 border-slate-600' : 'bg-red-900/20 border-red-900/50 opacity-60'}">
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-2 rounded-full ${isAlive ? 'bg-green-500' : 'bg-red-600'}"></div>
+                        <span class="font-bold text-sm ${isAlive ? 'text-white' : 'text-red-500 line-through'}">${p} ${p===currentUser?'(คุณ)':''}</span>
+                    </div>
+                    ${roleText}
+                </div>`;
             }).join('');
         }
 
         function showActionPanel(title, targets, type) {
-            document.getElementById('actionZone').classList.remove('hidden');
-            document.getElementById('actionTitle').textContent = title;
+            document.getElementById('actionZone').classList.remove('hidden'); document.getElementById('actionTitle').textContent = title;
             const list = document.getElementById('targetList');
-            
             targets.forEach(t => {
                 const btn = document.createElement('button');
-                btn.className = "bg-slate-800 p-2.5 rounded-lg border border-slate-600 font-bold transition-all";
+                btn.className = "bg-slate-800 hover:bg-slate-700 p-3 rounded-xl border border-slate-600 font-bold text-sm text-white transition-all";
                 btn.textContent = t;
                 btn.onclick = () => {
                     [...list.children].forEach(c => c.classList.remove('ring-2', 'ring-yellow-500', 'bg-slate-700'));
-                    btn.classList.add('ring-2', 'ring-yellow-500', 'bg-slate-700');
-                    selectedTarget = t;
+                    btn.classList.add('ring-2', 'ring-yellow-500', 'bg-slate-700'); selectedTarget = t;
                     document.getElementById('btnConfirmAction').classList.remove('hidden');
                     document.getElementById('btnConfirmAction').onclick = () => submitAction(type);
                 };
@@ -451,20 +500,14 @@
         }
 
         async function submitAction(type) {
-            document.getElementById('actionZone').classList.add('hidden');
-            const ref = doc(db, "rooms", currentRoomId);
-            
+            document.getElementById('actionZone').classList.add('hidden'); const ref = doc(db, "rooms", currentRoomId);
             if(type === "check") {
-                const docSnap = await getDoc(ref);
-                const role = docSnap.data().roles[selectedTarget];
+                const docSnap = await getDoc(ref); const role = docSnap.data().roles[selectedTarget];
                 const isWolf = role === "มนุษย์หมาป่า"; 
                 showToast(`${selectedTarget} ${isWolf ? 'เป็นหมาป่า! 🐺' : 'ไม่ใช่หมาป่า 🧑‍🌾'}`, isWolf ? 'error' : 'success');
                 await updateDoc(ref, { [`actions.${currentUser}`]: "checked" });
-            } else if (type === "vote") {
-                await updateDoc(ref, { [`votes.${currentUser}`]: selectedTarget });
-            } else { 
-                await updateDoc(ref, { [`actions.${currentUser}`]: { type: type, target: selectedTarget } });
-            }
+            } else if (type === "vote") await updateDoc(ref, { [`votes.${currentUser}`]: selectedTarget });
+            else await updateDoc(ref, { [`actions.${currentUser}`]: { type: type, target: selectedTarget } });
         }
 
         async function processNightEnd(data) {
@@ -473,25 +516,25 @@
             const actionsDone = Object.keys(data.actions || {});
 
             if(actionsDone.length >= requiredActions.length && requiredActions.length > 0) {
-                let wolfTarget = null;
-                let protectTarget = null;
-
+                let wolfTarget = null; let protectTarget = null;
                 Object.values(data.actions).forEach(action => {
                     if(action && action.type === 'kill') wolfTarget = action.target;
                     if(action && action.type === 'protect') protectTarget = action.target;
                 });
 
-                let msg = "เมื่อคืน หมู่บ้านสงบสุข 🕊️";
-                let newAlive = [...data.alive];
+                let msg = "เมื่อคืน หมู่บ้านสงบสุข 🕊️"; let newAlive = [...data.alive];
+                let historyLog = `คืนวันที่ ${data.dayCount}: ไม่มีใครตาย`;
 
                 if (wolfTarget && wolfTarget !== protectTarget) {
                     newAlive = newAlive.filter(p => p !== wolfTarget);
-                    msg = `เมื่อคืนศพตกเป็นของ ${wolfTarget} 🩸`;
+                    msg = `เมื่อคืนมีคนตาย 1 คน... คือ ${wolfTarget} 🩸`;
+                    historyLog = `คืนวันที่ ${data.dayCount}: หมาป่าฆ่า ${wolfTarget}`;
                 } else if (wolfTarget && wolfTarget === protectTarget) {
                     msg = "บอดี้การ์ดคุ้มกันเหยื่อไว้ได้! 🛡️";
+                    historyLog = `คืนวันที่ ${data.dayCount}: บอดี้การ์ดเซฟสำเร็จ`;
                 }
 
-                await updateDoc(doc(db, "rooms", currentRoomId), { phase: "day", alive: newAlive, actions: {}, log: msg });
+                await updateDoc(doc(db, "rooms", currentRoomId), { phase: "day", alive: newAlive, actions: {}, log: msg, history: arrayUnion(historyLog) });
                 checkWin(newAlive, data.roles);
             }
         }
@@ -499,14 +542,14 @@
         async function processVoteEnd(data) {
             const votesDone = Object.keys(data.votes || {});
             if(votesDone.length >= data.alive.length) {
-                const counts = {};
-                Object.values(data.votes).forEach(t => counts[t] = (counts[t] || 0) + 1);
+                const counts = {}; Object.values(data.votes).forEach(t => counts[t] = (counts[t] || 0) + 1);
                 const hanged = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
 
                 const newAlive = data.alive.filter(p => p !== hanged);
-                const msg = `แขวนคอ ${hanged}! (เขาคือ ${data.roles[hanged]}) 🪢`;
+                const msg = `มติประหาร ${hanged}! (เขาคือ ${data.roles[hanged]}) 🪢`;
+                const historyLog = `เช้าวันที่ ${data.dayCount}: แขวนคอ ${hanged}`;
 
-                await updateDoc(doc(db, "rooms", currentRoomId), { phase: "night", alive: newAlive, votes: {}, log: msg, dayCount: (data.dayCount || 1) + 1 });
+                await updateDoc(doc(db, "rooms", currentRoomId), { phase: "night", alive: newAlive, votes: {}, log: msg, dayCount: (data.dayCount || 1) + 1, history: arrayUnion(historyLog) });
                 checkWin(newAlive, data.roles);
             }
         }
@@ -516,10 +559,10 @@
             const villagers = aliveList.length - wolves;
 
             let endMsg = null;
-            if(wolves === 0) endMsg = "ชาวบ้านชนะ! หมาป่าถูกกำจัดหมดแล้ว 🎊";
-            else if(wolves >= villagers) endMsg = "หมาป่าชนะ! 🐺";
+            if(wolves === 0) endMsg = "ชาวบ้านชนะ! หมาป่าสูญพันธุ์ 🎊";
+            else if(wolves >= villagers) endMsg = "หมาป่าชนะ! คืนนี้หมาป่าจะครองหมู่บ้าน 🐺";
 
-            if(endMsg) await updateDoc(doc(db, "rooms", currentRoomId), { phase: "ended", log: endMsg });
+            if(endMsg) await updateDoc(doc(db, "rooms", currentRoomId), { phase: "ended", log: endMsg, history: arrayUnion(endMsg) });
         }
 
         document.getElementById('myCard').addEventListener('click', function() { this.classList.toggle('flipped'); });
