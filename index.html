@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Werewolf Online - Tabletop Edition</title>
+    <title>Werewolf Online - Server Browser</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,7 +13,7 @@
             font-family: 'Prompt', sans-serif;
             color: #f8fafc;
             min-height: 100dvh; 
-            overflow: hidden; /* ล็อกหน้าจอไม่ให้เลื่อนมั่ว */
+            overflow: hidden; 
             -webkit-tap-highlight-color: transparent;
             transition: background 1.5s ease;
             background-color: #0f172a;
@@ -29,15 +29,18 @@
         .hide-screen { opacity: 0; transform: scale(1.05); pointer-events: none; visibility: hidden; z-index: 0; }
         .show-screen { opacity: 1; transform: scale(1); visibility: visible; z-index: 10; }
 
-        /* ================= UI ภายในเกมเพลย์ ================= */
-        /* ป้ายบทบาทมุมขวาบน */
+        /* ================= UI Scrollbar สำหรับ Server List ================= */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+
+        /* ================= UI เกมเพลย์ ================= */
         #topRightBadge { position: fixed; top: env(safe-area-inset-top, 16px); right: 16px; z-index: 50; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         #topRightBadge:active { transform: scale(0.95); }
 
-        /* โต๊ะเกมตรงกลาง (Tabletop Grid) */
         #gameTable { flex: 1; overflow-y: auto; padding: 80px 16px 140px 16px; display: flex; align-content: flex-start; justify-content: center; flex-wrap: wrap; gap: 12px; }
         
-        /* การ์ดผู้เล่นบนโต๊ะ */
         .player-card { width: calc(33.33% - 8px); max-width: 100px; aspect-ratio: 3/4; border-radius: 12px; position: relative; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; box-shadow: 0 5px 15px rgba(0,0,0,0.4); border: 2px solid #334155; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
         .player-card.selected { transform: translateY(-8px) scale(1.05); border-color: #eab308; box-shadow: 0 10px 25px rgba(234, 179, 8, 0.5); z-index: 20; }
         .player-card.dead { filter: grayscale(100%) brightness(0.6); border-color: #7f1d1d; pointer-events: none; }
@@ -45,17 +48,14 @@
         .player-card .card-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0.8; }
         .player-card .skull-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; z-index: 3; text-shadow: 0 0 10px red; }
 
-        /* แถบเครื่องมือด้านล่าง (Bottom Bar) */
-        #bottomBar { position: fixed; bottom: 0; left: 0; w: 100%; width: 100%; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid rgba(255,255,255,0.1); z-index: 40; border-radius: 24px 24px 0 0; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        #bottomBar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid rgba(255,255,255,0.1); z-index: 40; border-radius: 24px 24px 0 0; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
         #bottomBar.show { transform: translateY(0); }
         
-        /* Modal โชว์การ์ดเต็ม */
         #cardModal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(10px); padding: 20px;}
         #cardModal.open { opacity: 1; pointer-events: auto; }
         .big-card-img { width: 100%; max-width: 280px; aspect-ratio: 2/3; object-fit: cover; border-radius: 1.5rem; border: 2px solid #ef4444; box-shadow: 0 0 40px rgba(239, 68, 68, 0.4); transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
         #cardModal.open .big-card-img { transform: scale(1); }
 
-        /* Toast UI */
         #toast-container { position: fixed; top: max(16px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; width: 90%; max-width: 380px; }
         .toast { background: rgba(15, 23, 42, 0.95); border-left: 4px solid #3b82f6; color: white; padding: 12px 16px; border-radius: 12px; transform: translateY(-150%); transition: transform 0.4s; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; font-size: 0.9rem;}
         .toast.show { transform: translateY(0); }
@@ -76,68 +76,78 @@
     <div id="screen-login" class="screen show-screen items-center justify-center p-6">
         <div class="glass-panel p-8 rounded-[2rem] w-full max-w-sm text-center">
             <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-red-500 to-orange-500 mb-2 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]">WEREWOLF</h1>
-            <p class="text-slate-400 mb-8 font-semibold tracking-widest uppercase text-sm">Tabletop Edition</p>
+            <p class="text-slate-400 mb-8 font-semibold tracking-widest uppercase text-sm">Server Browser</p>
             <input type="text" id="playerNameInput" placeholder="กรอกชื่อนักเรียน..." class="w-full mb-6 px-4 py-3.5 bg-slate-900 border border-slate-700 rounded-xl focus:border-red-500 outline-none text-center text-lg font-bold text-white transition-all">
             <button id="btnSaveName" class="btn-primary">เข้าสู่หมู่บ้าน</button>
         </div>
     </div>
 
-    <div id="screen-lobby" class="screen hide-screen items-center p-4 pt-10">
-        <div class="w-full max-w-lg">
-            <div class="flex justify-between items-center mb-6 bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-lg">
+    <div id="screen-lobby" class="screen hide-screen items-center p-4 pt-8">
+        <div class="w-full max-w-4xl h-full flex flex-col">
+            <div class="flex justify-between items-center mb-6 bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-lg shrink-0">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-xl shadow-inner">🐺</div>
+                    <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-xl shadow-inner">🧑‍🎓</div>
                     <div>
-                        <p class="text-xs text-slate-400">ผู้เล่นปัจจุบัน</p>
-                        <p id="displayPlayerName" class="font-bold text-white text-lg leading-tight truncate max-w-[120px]"></p>
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">บัญชีผู้เล่น</p>
+                        <p id="displayPlayerName" class="font-bold text-white text-lg leading-tight truncate max-w-[150px]"></p>
                     </div>
                 </div>
-                <button id="btnLogout" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl text-sm font-bold text-slate-300">เปลี่ยนชื่อ</button>
+                <button id="btnLogout" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-4 py-2 rounded-xl text-sm font-bold border border-red-500/20 transition-all">เปลี่ยนชื่อ</button>
             </div>
 
-            <div class="glass-panel p-6 rounded-[2rem] mb-6">
-                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">👑 สร้างโต๊ะใหม่</h3>
-                <input type="text" id="roomNameInput" placeholder="ชื่อโต๊ะเล่นเกม..." class="w-full mb-4 px-4 py-3 bg-slate-900 rounded-xl border border-slate-700 focus:border-red-500 outline-none">
-                <select id="playerCount" class="w-full mb-5 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none">
-                    <option value="5">วงเล็ก (5 คน)</option>
-                    <option value="7">วงกลาง (7 คน)</option>
-                    <option value="10" selected>วงมาตรฐาน (10 คน)</option>
-                </select>
-                <button id="btnCreateRoom" class="btn-primary">เปิดโต๊ะเกม</button>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full flex-1 min-h-0 pb-[env(safe-area-inset-bottom)]">
+                <div class="glass-panel p-6 rounded-[2rem] flex flex-col shrink-0 h-fit">
+                    <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-white">👑 สร้างเซิร์ฟเวอร์ใหม่</h3>
+                    <input type="text" id="roomNameInput" placeholder="ตั้งชื่อห้องของคุณ..." class="w-full mb-4 px-4 py-3.5 bg-slate-900 rounded-xl border border-slate-700 focus:border-red-500 outline-none font-medium text-white">
+                    <select id="playerCount" class="w-full mb-6 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3.5 text-white outline-none font-medium cursor-pointer">
+                        <option value="5">วงเล็ก (5 คน)</option>
+                        <option value="7">วงกลาง (7 คน)</option>
+                        <option value="10" selected>วงมาตรฐาน (10 คน)</option>
+                        <option value="15">วงใหญ่ปาร์ตี้ (15 คน)</option>
+                    </select>
+                    <button id="btnCreateRoom" class="btn-primary mt-auto py-4 text-lg">เปิดเซิร์ฟเวอร์</button>
+                </div>
 
-            <div class="glass-panel p-6 rounded-[2rem]">
-                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">🤝 เข้าร่วมโต๊ะ</h3>
-                <input type="text" id="joinRoomCode" placeholder="รหัส 6 หลัก" class="w-full mb-5 px-4 py-4 bg-slate-900 rounded-xl border border-slate-700 outline-none text-center text-xl tracking-[0.2em] font-black uppercase text-blue-400">
-                <button id="btnJoinRoom" class="btn-primary" style="background: linear-gradient(135deg, #2563eb, #1e3a8a);">เข้าร่วมด่วน</button>
+                <div class="glass-panel p-6 rounded-[2rem] flex flex-col h-[400px] md:h-full">
+                    <div class="flex justify-between items-center mb-4 border-b border-slate-700/50 pb-4">
+                        <h3 class="text-xl font-bold flex items-center gap-2 text-white">🌐 เลือกโต๊ะที่ว่าง</h3>
+                        <span class="flex h-3 w-3 relative">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </span>
+                    </div>
+                    
+                    <div id="serverListContainer" class="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-3">
+                        <p class="text-slate-500 text-center mt-10 text-sm font-medium">กำลังค้นหาเซิร์ฟเวอร์...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="screen-room" class="screen hide-screen items-center p-4 pt-10">
         <div class="w-full max-w-lg flex flex-col h-full">
-            <div class="text-center mb-6">
-                <div class="bg-slate-900 px-6 py-2 rounded-full border border-slate-700 mb-4 inline-flex items-center gap-2 shadow-inner">
-                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest">รหัสโต๊ะ</span>
-                    <span id="roomIdDisplay" class="font-mono text-xl font-black text-blue-400 tracking-widest">---</span>
+            <div class="text-center mb-6 shrink-0">
+                <div class="bg-indigo-900/40 px-6 py-2 rounded-full border border-indigo-500/30 mb-4 inline-flex items-center gap-2">
+                    <span class="text-indigo-300 text-xs font-bold uppercase tracking-widest">เซิร์ฟเวอร์</span>
                 </div>
-                <h2 id="roomTitleDisplay" class="text-3xl font-black text-white">ชื่อห้อง</h2>
+                <h2 id="roomTitleDisplay" class="text-3xl font-black text-white px-2">ชื่อห้อง</h2>
             </div>
             
-            <div class="glass-panel p-5 rounded-[2rem] flex-1 overflow-y-auto mb-6">
+            <div class="glass-panel p-5 rounded-[2rem] flex-1 overflow-y-auto custom-scrollbar mb-6 border border-slate-700/50">
                 <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
-                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">รอนักเรียนเข้าโต๊ะ</h3>
-                    <span class="bg-indigo-600 px-3 py-1 rounded-full text-xs font-bold text-white shadow-lg"><span id="playerCountDisplay">0/0</span></span>
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">นักเรียนที่เข้ามาแล้ว</h3>
+                    <span class="bg-green-600 px-3 py-1 rounded-full text-xs font-bold text-white shadow-lg"><span id="playerCountDisplay">0/0</span></span>
                 </div>
                 <div id="playerListWait" class="grid grid-cols-2 gap-3"></div>
             </div>
 
-            <div class="pb-[env(safe-area-inset-bottom)]">
+            <div class="pb-[calc(env(safe-area-inset-bottom)+16px)] shrink-0">
                 <div class="flex gap-3">
-                    <button id="btnLeaveRoom" class="w-1/3 px-4 py-4 bg-slate-800 rounded-2xl font-bold text-slate-300 border border-slate-600">ออก</button>
-                    <button id="btnStartGame" class="btn-primary w-2/3 hidden">สับไพ่แจก!</button>
+                    <button id="btnLeaveRoom" class="w-1/3 px-4 py-4 bg-slate-800 rounded-2xl font-bold text-slate-300 border border-slate-600 hover:bg-slate-700 transition-colors">ออก</button>
+                    <button id="btnStartGame" class="btn-primary w-2/3 hidden text-lg">เริ่มเกม!</button>
                 </div>
-                <p id="waitingHostText" class="text-slate-400 mt-4 font-medium text-center animate-pulse hidden">รอ Host แจกไพ่...</p>
+                <p id="waitingHostText" class="text-slate-400 mt-4 font-medium text-center animate-pulse hidden">รอ Host กดเริ่มเกม...</p>
             </div>
         </div>
     </div>
@@ -150,30 +160,31 @@
                 <span id="phaseTitle" class="text-xl font-black text-white">กลางคืน 🌙</span>
             </div>
             
-            <div id="topRightBadge" class="bg-gradient-to-br from-red-600 to-red-900 px-4 py-2 rounded-2xl border border-red-500/50 flex flex-col items-center shadow-lg pointer-events-auto">
-                <span class="text-[0.6rem] font-bold text-red-200 uppercase tracking-widest mb-0.5">บทบาทของคุณ</span>
+            <div id="topRightBadge" class="bg-gradient-to-br from-slate-800 to-slate-900 px-4 py-2 rounded-2xl border border-slate-600 flex flex-col items-center shadow-lg pointer-events-auto">
+                <span class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest mb-0.5">บทบาทของคุณ</span>
                 <span id="myBadgeRoleName" class="text-sm font-black text-white drop-shadow-md">ชาวบ้าน</span>
             </div>
         </div>
 
-        <div id="gameTable">
-            </div>
+        <div id="gameTable" class="custom-scrollbar"></div>
 
         <div id="bottomBar" class="glass-panel">
-            <div class="w-12 h-1 bg-slate-600 rounded-full mx-auto mb-4"></div> <div class="text-center mb-4">
-                <h3 id="bottomActionTitle" class="text-lg font-bold text-white mb-1">ปรึกษากันได้เลย</h3>
-                <p id="bottomActionDesc" class="text-sm text-slate-400">ยังไม่มีแอคชั่นในเฟสนี้</p>
+            <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-4 opacity-50"></div>
+            
+            <div class="text-center mb-4">
+                <h3 id="bottomActionTitle" class="text-xl font-black text-white mb-1">ปรึกษากันได้เลย</h3>
+                <p id="bottomActionDesc" class="text-sm text-slate-300 font-medium">ยังไม่มีแอคชั่นในเฟสนี้</p>
             </div>
 
-            <button id="btnConfirmAction" class="btn-primary btn-yellow hidden mb-4">ยืนยันเป้าหมาย</button>
+            <button id="btnConfirmAction" class="btn-primary btn-yellow hidden mb-4 py-3.5 text-lg">ยืนยันเป้าหมาย</button>
             
             <div id="hostTools" class="hidden border-t border-slate-700/50 pt-4 mt-2">
                 <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">คุมเกม (Host)</span>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">ระบบควบคุม (Host)</span>
                     <span id="voteTrackerText" class="text-xs font-bold bg-slate-800 px-2 py-1 rounded text-slate-300 hidden"></span>
                 </div>
-                <button id="btnHostAction" class="w-full bg-indigo-600 hover:bg-indigo-700 py-3 rounded-xl font-bold text-white transition-all shadow-lg text-sm">เปิดโหวต ⚖️</button>
-                <button id="btnHostNewGame" class="w-full bg-red-900/50 border border-red-700 py-3 rounded-xl font-bold text-red-300 transition-all text-sm hidden">เล่นใหม่อีกรอบ 🔄</button>
+                <button id="btnHostAction" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3.5 rounded-xl font-bold text-white transition-all shadow-lg text-sm">เปิดโหวต ⚖️</button>
+                <button id="btnHostNewGame" class="w-full bg-slate-800 border border-slate-600 py-3.5 rounded-xl font-bold text-white hover:bg-slate-700 transition-all text-sm hidden">กลับห้องรอ (เล่นใหม่) 🔄</button>
             </div>
         </div>
     </div>
@@ -181,15 +192,14 @@
     <div id="cardModal">
         <img id="modalCardImg" src="" alt="Your Card" class="big-card-img">
         <h2 id="modalRoleName" class="text-3xl font-black text-white mt-6 mb-2 drop-shadow-lg">บทบาท</h2>
-        <p id="modalRoleDesc" class="text-slate-300 text-center max-w-xs text-sm bg-slate-900/80 px-4 py-2 rounded-xl border border-slate-700">คำอธิบาย</p>
-        <button id="btnCloseModal" class="mt-8 bg-white/10 hover:bg-white/20 px-8 py-3 rounded-full font-bold text-white border border-white/20 backdrop-blur-md transition-all">ปิดหน้าต่าง</button>
+        <p id="modalRoleDesc" class="text-slate-200 text-center max-w-xs text-sm bg-slate-800/90 px-5 py-3 rounded-xl border border-slate-600 font-medium">คำอธิบาย</p>
+        <button id="btnCloseModal" class="mt-8 bg-white/10 hover:bg-white/20 px-8 py-3 rounded-full font-bold text-white border border-white/20 backdrop-blur-md transition-all active:scale-95">ปิดหน้าต่าง</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion, collection, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // *** ใส่ Firebase Config ***
         const firebaseConfig = {
             apiKey: "AIzaSyAzA-3TJ4lcNOFUGoOVd8JhExoeIRxSsFU",
             authDomain: "wolf-ba81b.firebaseapp.com",
@@ -203,18 +213,21 @@
         const db = getFirestore(app);
 
         let currentUser = localStorage.getItem('ww_name') || "";
-        let currentRoomId = null; let unsubscribeRoom = null;
+        let currentRoomId = null; 
+        let unsubscribeRoom = null;
+        let unsubscribeServers = null; // สำหรับหยุดฟัง Server List
         let isHost = false; let myRole = ""; let isDead = false;
         let selectedTarget = null; let currentPhase = "";
-        let currentActionType = null; // เก็บว่าตอนนี้ให้ทำอะไร (kill, check, vote)
+        let currentActionType = null;
 
         const roleData = {
-            "มนุษย์หมาป่า": { img: "มนุษย์หมาป่า.jpg", desc: "ตื่นมาตอนกลางคืนเพื่อเลือกกัดเหยื่อ 1 คน" },
-            "ชาวบ้าน": { img: "ชาวบ้าน.jpg", desc: "ไม่มีพลัง อาศัยจับผิดและโหวตแขวนคอ" },
-            "เทพพยากรณ์": { img: "เทพพยากรณ์.jpg", desc: "ตื่นตอนกลางคืนเพื่อส่องดูว่าใครเป็นหมาป่า" },
-            "บอดี้การ์ด": { img: "บอดี้การ์ด.jpg", desc: "เลือกปกป้องผู้เล่น 1 คนในตอนกลางคืน" },
+            "มนุษย์หมาป่า": { img: "มนุษย์หมาป่า.jpg", desc: "ตื่นมาตอนกลางคืนเพื่อร่วมกันเลือกกัดเหยื่อ 1 คน" },
+            "ชาวบ้าน": { img: "ชาวบ้าน.jpg", desc: "ไม่มีพลัง อาศัยจับผิดและโหวตแขวนคอตอนเช้า" },
+            "เทพพยากรณ์": { img: "เทพพยากรณ์.jpg", desc: "ตื่นตอนกลางคืนเพื่อตรวจสอบว่าใครเป็นหมาป่า" },
+            "บอดี้การ์ด": { img: "บอดี้การ์ด.jpg", desc: "เลือกปกป้องผู้เล่น 1 คนให้รอดตายในตอนกลางคืน" },
             "นางปีศาจ": { img: "นางปีศาจ.jpg", desc: "ส่องหาเทพพยากรณ์ (อยู่ฝ่ายหมาป่า)" },
-            "นายพราน": { img: "นายพราน.jpg", desc: "ถ้าถูกฆ่า จะลากใครตายตามไปด้วยได้ 1 คน" }
+            "นายพราน": { img: "นายพราน.jpg", desc: "ถ้าถูกโหวตหรือถูกฆ่า จะลากใครตายตามไปด้วยได้ 1 คน" },
+            "แม่มด": { img: "แม่มด.jpg", desc: "ชุบชีวิตหรือฆ่าผู้เล่นได้อย่างละ 1 ครั้งตลอดเกม" }
         };
 
         const showToast = (msg, type='info') => {
@@ -233,9 +246,12 @@
                 if(s === id) { el.classList.remove('hide-screen'); el.classList.add('show-screen'); }
                 else { el.classList.remove('show-screen'); el.classList.add('hide-screen'); }
             });
+            
+            // จัดการ Server List Listener
+            if(id === 'screen-lobby') listenForServers();
+            else if(unsubscribeServers) unsubscribeServers();
         };
 
-        // 🎲 Double Shuffle (สุ่มไร้อคติ)
         const cryptoShuffle = (array) => {
             const arr = [...array];
             for (let i = arr.length - 1; i > 0; i--) {
@@ -253,7 +269,7 @@
             return cryptoShuffle(deck);
         };
 
-        // --- Init & Flow ---
+        // --- Init ---
         if(currentUser) { document.getElementById('displayPlayerName').textContent = currentUser; showScreen('screen-lobby'); } 
         else showScreen('screen-login');
 
@@ -264,19 +280,70 @@
         });
         document.getElementById('btnLogout').addEventListener('click', () => { localStorage.removeItem('ww_name'); currentUser = ""; document.getElementById('playerNameInput').value = ""; showScreen('screen-login'); });
 
+        // ==========================================
+        // ระบบ Server Browser (เรียลไทม์)
+        // ==========================================
+        function listenForServers() {
+            const q = query(collection(db, "rooms"), where("status", "==", "waiting"));
+            unsubscribeServers = onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('serverListContainer');
+                container.innerHTML = '';
+                
+                if(snapshot.empty) {
+                    container.innerHTML = `
+                        <div class="flex flex-col items-center justify-center h-full text-slate-500 opacity-60 pt-10">
+                            <span class="text-4xl mb-3">📭</span>
+                            <p class="font-bold">ยังไม่มีโต๊ะเปิดอยู่</p>
+                            <p class="text-xs">สร้างโต๊ะชวนเพื่อนมาเล่นเลย!</p>
+                        </div>`;
+                    return;
+                }
+                
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const roomId = docSnap.id;
+                    const isFull = data.players.length >= data.maxPlayers;
+                    
+                    const btn = document.createElement('div');
+                    btn.className = `bg-slate-800 p-4 rounded-2xl border border-slate-700 flex justify-between items-center transition-all ${isFull ? 'opacity-50' : 'hover:border-blue-500 cursor-pointer shadow-md'}`;
+                    btn.innerHTML = `
+                        <div class="flex-1 truncate pr-3">
+                            <h4 class="font-bold text-white text-base truncate">${data.name}</h4>
+                            <p class="text-xs text-slate-400 mt-0.5 truncate">👑 Host: ${data.host}</p>
+                        </div>
+                        <div class="shrink-0 text-right flex flex-col items-end gap-1">
+                            <span class="bg-slate-900 px-3 py-1 rounded-full text-xs font-black ${isFull ? 'text-red-400' : 'text-green-400'} border ${isFull ? 'border-red-900' : 'border-green-900'}">${data.players.length}/${data.maxPlayers}</span>
+                        </div>
+                    `;
+                    
+                    if(!isFull) {
+                        btn.onclick = async () => {
+                            btn.classList.add('opacity-50', 'pointer-events-none'); // กันกดซ้ำ
+                            if(!data.players.includes(currentUser)) {
+                                await updateDoc(doc(db, "rooms", roomId), { players: arrayUnion(currentUser), alive: arrayUnion(currentUser) });
+                            }
+                            joinRoom(roomId);
+                        };
+                    }
+                    container.appendChild(btn);
+                });
+            });
+        }
+
         // --- Room Management ---
         const joinRoom = (roomId) => {
             currentRoomId = roomId; showScreen('screen-room'); document.getElementById('roomIdDisplay').textContent = roomId;
             unsubscribeRoom = onSnapshot(doc(db, "rooms", roomId), (docSnap) => {
-                if(!docSnap.exists()) { showToast("ห้องหายไปแล้ว", 'error'); leaveRoom(); return; }
+                if(!docSnap.exists()) { showToast("ห้องถูกปิดไปแล้ว", 'error'); leaveRoom(); return; }
                 const data = docSnap.data(); isHost = (data.host === currentUser);
                 
                 if(data.status === 'waiting') {
                     document.getElementById('roomTitleDisplay').textContent = data.name;
                     document.getElementById('playerCountDisplay').textContent = `${data.players.length}/${data.maxPlayers}`;
                     document.getElementById('playerListWait').innerHTML = data.players.map(p => 
-                        `<div class="bg-slate-800/80 p-3 rounded-xl flex items-center gap-3 border ${p===data.host?'border-red-500':'border-slate-700'}">
-                            <span class="font-bold text-sm text-white truncate w-full">${p} ${p===data.host?'👑':''}</span>
+                        `<div class="bg-slate-800 p-3 rounded-xl flex items-center justify-between border ${p===data.host?'border-indigo-500':'border-slate-700'}">
+                            <span class="font-bold text-sm text-white truncate w-full">${p}</span>
+                            ${p===data.host?'<span class="text-indigo-400 text-xs font-bold shrink-0">HOST</span>':''}
                         </div>`
                     ).join('');
                     
@@ -295,14 +362,7 @@
             });
             joinRoom(roomId);
         });
-        document.getElementById('btnJoinRoom').addEventListener('click', async () => {
-            const code = document.getElementById('joinRoomCode').value.toUpperCase();
-            const ref = doc(db, "rooms", code); const snap = await getDoc(ref);
-            if(snap.exists() && snap.data().status === 'waiting') {
-                if(!snap.data().players.includes(currentUser)) await updateDoc(ref, { players: arrayUnion(currentUser), alive: arrayUnion(currentUser) });
-                joinRoom(code);
-            } else showToast('เข้าไม่ได้จ้า', 'error');
-        });
+
         const leaveRoom = () => { if(unsubscribeRoom) unsubscribeRoom(); currentRoomId = null; showScreen('screen-lobby'); };
         document.getElementById('btnLeaveRoom').addEventListener('click', leaveRoom);
 
@@ -310,11 +370,11 @@
             const ref = doc(db, "rooms", currentRoomId); const snap = await getDoc(ref); const players = snap.data().players;
             let shuffledDeck = generateDeck(players.length); let shuffledPlayers = cryptoShuffle(players); 
             let rolesMap = {}; shuffledPlayers.forEach((p, i) => rolesMap[p] = shuffledDeck[i]);
-            await updateDoc(ref, { status: "playing", phase: "night", roles: rolesMap, log: "เข้าสู่คืนแรก..." });
+            await updateDoc(ref, { status: "playing", phase: "night", roles: rolesMap, log: "เข้าสู่คืนแรก หมู่บ้านหลับใหล..." });
         });
 
         // ==========================================
-        // The Tabletop Engine (ออโต้วาดโต๊ะและจัดการ UI)
+        // The Tabletop Engine
         // ==========================================
         function handleGameEngine(data) {
             showScreen('screen-gameplay');
@@ -323,50 +383,49 @@
             isDead = !data.alive.includes(currentUser);
 
             // เซ็ตป้ายมุมขวาบน
-            document.getElementById('myBadgeRoleName').textContent = isDead ? "วิญญาณ 👻" : myRole;
+            const badgeRole = document.getElementById('myBadgeRoleName');
+            const badgeContainer = document.getElementById('topRightBadge');
+            badgeRole.textContent = isDead ? "วิญญาณ 👻" : myRole;
+            
+            if(myRole === "มนุษย์หมาป่า" && !isDead) {
+                badgeContainer.className = "bg-gradient-to-br from-red-800 to-red-900 px-4 py-2 rounded-2xl border border-red-500 flex flex-col items-center shadow-lg pointer-events-auto";
+            } else if (isDead) {
+                badgeContainer.className = "bg-gradient-to-br from-purple-800 to-slate-900 px-4 py-2 rounded-2xl border border-purple-500 flex flex-col items-center shadow-lg pointer-events-auto";
+            } else {
+                badgeContainer.className = "bg-gradient-to-br from-slate-700 to-slate-900 px-4 py-2 rounded-2xl border border-slate-500 flex flex-col items-center shadow-lg pointer-events-auto";
+            }
+
             const rData = roleData[myRole] || roleData["ชาวบ้าน"];
             document.getElementById('modalCardImg').src = rData.img;
             document.getElementById('modalRoleName').textContent = myRole;
             document.getElementById('modalRoleDesc').textContent = rData.desc;
 
-            // อัปเดตข้อมูลทั่วไป
             document.getElementById('dayCounter').textContent = `วันที่ ${data.dayCount}`;
-            document.getElementById('phaseTitle').textContent = currentPhase === "night" ? "กลางคืน 🌙" : currentPhase === "voting" ? "โหวตแขวนคอ ⚖️" : "ตอนเช้า ☀️";
+            document.getElementById('phaseTitle').textContent = currentPhase === "night" ? "กลางคืน 🌙" : currentPhase === "voting" ? "โหวตประหาร ⚖️" : "ตอนเช้า ☀️";
             setTheme(currentPhase === "night" ? "theme-night" : (data.log.includes("ตาย") || currentPhase==="ended" ? "theme-blood" : "theme-day"));
 
-            // เคลียร์ค่า Action
-            currentActionType = null;
-            selectedTarget = null;
+            currentActionType = null; selectedTarget = null;
             document.getElementById('btnConfirmAction').classList.add('hidden');
-            const bottomBar = document.getElementById('bottomBar');
-            bottomBar.classList.add('show');
+            document.getElementById('bottomBar').classList.add('show');
 
-            // วาดไพ่ผู้เล่นบนโต๊ะ
             renderTable(data);
 
-            // จัดการ Bottom Bar ตาม Phase
             const actionTitle = document.getElementById('bottomActionTitle');
             const actionDesc = document.getElementById('bottomActionDesc');
             
             if(currentPhase === "night") {
-                actionTitle.textContent = "บทบาทพิเศษทำงาน";
-                actionDesc.textContent = "หลับตาซะ...";
-                
+                actionTitle.textContent = "บทบาทพิเศษทำงาน"; actionDesc.textContent = "หลับตาแล้วรอเงียบๆ...";
                 if(myRole === "มนุษย์หมาป่า" && !isDead && !data.actions[currentUser]) showToast('กดเลือกเหยื่อบนโต๊ะ!', 'wolf');
 
                 if(!isDead && !data.actions[currentUser]) {
-                    if(myRole === "มนุษย์หมาป่า") setupAction("เลือกฆ่าเหยื่อ 🩸", "แตะการ์ดคนที่จะฆ่า", "kill");
-                    else if (myRole === "เทพพยากรณ์") setupAction("ส่องหมาป่า 🔮", "แตะการ์ดคนที่จะตรวจ", "check");
-                    else if (myRole === "บอดี้การ์ด") setupAction("ปกป้องคน 🛡️", "แตะการ์ดคนที่จะคุ้มกัน", "protect");
-                } else if (!isDead && data.actions[currentUser]) {
-                    actionDesc.textContent = "ใช้พลังไปแล้ว รอคนอื่น...";
-                }
-
+                    if(myRole === "มนุษย์หมาป่า") setupAction("เลือกฆ่าเหยื่อ 🩸", "แตะการ์ดคนที่จะฆ่าบนโต๊ะ", "kill");
+                    else if (myRole === "เทพพยากรณ์") setupAction("ส่องหมาป่า 🔮", "แตะการ์ดคนที่จะส่อง", "check");
+                    else if (myRole === "บอดี้การ์ด") setupAction("ปกป้องคน 🛡️", "แตะการ์ดเพื่อคุ้มกัน", "protect");
+                } else if (!isDead && data.actions[currentUser]) actionDesc.textContent = "ใช้พลังไปแล้ว รอเช้า...";
                 if(isHost) processNightEnd(data);
             } 
             else if (currentPhase === "day") {
-                actionTitle.textContent = "ตื่นเถิดชาวหมู่บ้าน!";
-                actionDesc.innerHTML = `<span class="text-white">${data.log}</span>`;
+                actionTitle.textContent = "หมู่บ้านตื่นแล้ว!"; actionDesc.innerHTML = `<span class="text-white">${data.log}</span>`;
                 if(isHost) {
                     document.getElementById('hostTools').classList.remove('hidden');
                     const btn = document.getElementById('btnHostAction');
@@ -377,8 +436,7 @@
             }
             else if (currentPhase === "voting") {
                 const voteCount = Object.keys(data.votes || {}).length;
-                actionTitle.textContent = "ลงคะแนนประหาร";
-                actionDesc.textContent = "แตะการ์ดคนที่น่าสงสัยที่สุด";
+                actionTitle.textContent = "ลงคะแนนประหาร"; actionDesc.textContent = "แตะการ์ดคนที่น่าสงสัยที่สุด";
                 
                 if(isHost) {
                     const tracker = document.getElementById('voteTrackerText');
@@ -386,14 +444,12 @@
                     document.getElementById('btnHostAction').classList.add('hidden');
                 }
 
-                if(!isDead && !data.votes[currentUser]) setupAction("โหวตแขวนคอ", "แตะการ์ดบนโต๊ะ", "vote");
+                if(!isDead && !data.votes[currentUser]) setupAction("โหวตแขวนคอ", "แตะการ์ดบนโต๊ะเลย", "vote");
                 else if (!isDead) actionDesc.textContent = `โหวตแล้ว รออีก ${data.alive.length - voteCount} คน...`;
-
                 if(isHost) processVoteEnd(data);
             }
             else if (currentPhase === "ended") {
-                actionTitle.textContent = "จบเกม!";
-                actionDesc.innerHTML = `<span class="text-lg text-white font-bold">${data.log}</span>`;
+                actionTitle.textContent = "จบเกมแล้ว!"; actionDesc.innerHTML = `<span class="text-lg text-white font-bold">${data.log}</span>`;
                 if(isHost) {
                     document.getElementById('hostTools').classList.remove('hidden');
                     document.getElementById('btnHostAction').classList.add('hidden');
@@ -403,13 +459,12 @@
             }
         }
 
-        // วาดการ์ดบนโต๊ะ
         function renderTable(data) {
             const table = document.getElementById('gameTable');
             table.innerHTML = data.players.map(p => {
                 const isAlive = data.alive.includes(p);
                 const roleImg = roleData[data.roles[p]]?.img || "ชาวบ้าน.jpg";
-                // ถ้าตาย หรือเราเป็นวิญญาณ จะเห็นไพ่คนอื่น
+                // ถ้าตายแล้ว หรือเราเป็นวิญญาณ จะเห็นไพ่คนอื่น
                 const showCard = (!isAlive || isDead || p === currentUser) ? roleImg : "https://images.unsplash.com/photo-1614294149010-950b698f72c0?q=80&w=300&auto=format&fit=crop"; 
                 
                 return `
@@ -420,23 +475,15 @@
                 </div>`;
             }).join('');
 
-            // แอดอีเวนต์ให้กดการ์ดได้
             document.querySelectorAll('.player-card').forEach(card => {
                 card.addEventListener('click', function() {
                     const targetName = this.dataset.name;
-                    // กดไม่ได้ถ้า: เราตายแล้ว, คนนั้นตายแล้ว, หรือไม่มีแอคชั่นในเฟสนี้
                     if(isDead || !data.alive.includes(targetName) || !currentActionType) return;
-                    
-                    // พิเศษ: หมาป่า/พยากรณ์ ห้ามเลือกตัวเอง (ยกเว้นบอดี้การ์ดหรือโหวต)
                     if(targetName === currentUser && (currentActionType === 'kill' || currentActionType === 'check')) {
                         return showToast('เลือกตัวเองไม่ได้!', 'error');
                     }
-
-                    // ลบ select คนอื่น แล้วไฮไลต์คนนี้
                     document.querySelectorAll('.player-card').forEach(c => c.classList.remove('selected'));
-                    this.classList.add('selected');
-                    selectedTarget = targetName;
-                    
+                    this.classList.add('selected'); selectedTarget = targetName;
                     document.getElementById('btnConfirmAction').classList.remove('hidden');
                 });
             });
@@ -462,6 +509,8 @@
                 await updateDoc(ref, { [`actions.${currentUser}`]: "checked" });
             } else if (type === "vote") await updateDoc(ref, { [`votes.${currentUser}`]: selectedTarget });
             else await updateDoc(ref, { [`actions.${currentUser}`]: { type: type, target: selectedTarget } });
+            
+            document.querySelectorAll('.player-card').forEach(c => c.classList.remove('selected'));
         }
 
         async function processNightEnd(data) {
@@ -473,7 +522,7 @@
                 let wolfTarget = null; let protectTarget = null;
                 Object.values(data.actions).forEach(a => { if(a?.type === 'kill') wolfTarget = a.target; if(a?.type === 'protect') protectTarget = a.target; });
 
-                let msg = "หมู่บ้านรอดพ้นคืนนี้ไปได้ 🕊️"; let newAlive = [...data.alive];
+                let msg = "รุ่งเช้าวันนี้ หมู่บ้านสงบสุข 🕊️"; let newAlive = [...data.alive];
 
                 if (wolfTarget && wolfTarget !== protectTarget) { newAlive = newAlive.filter(p => p !== wolfTarget); msg = `รุ่งเช้าพบศพ ${wolfTarget} 🩸`; } 
                 else if (wolfTarget && wolfTarget === protectTarget) msg = "เมื่อคืนบอดี้การ์ดสู้ตาย ปกป้องเหยื่อไว้ได้! 🛡️";
@@ -490,7 +539,7 @@
                 const hanged = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
 
                 const newAlive = data.alive.filter(p => p !== hanged);
-                const msg = `แขวนคอ ${hanged}! (พบว่าเขาคือ ${data.roles[hanged]}) 🪢`;
+                const msg = `มติแขวนคอ ${hanged}! (เขาคือ ${data.roles[hanged]}) 🪢`;
 
                 await updateDoc(doc(db, "rooms", currentRoomId), { phase: "night", alive: newAlive, votes: {}, log: msg, dayCount: (data.dayCount || 1) + 1 });
                 checkWin(newAlive, data.roles);
@@ -501,11 +550,10 @@
             const wolves = aliveList.filter(p => rolesMap[p] === "มนุษย์หมาป่า").length;
             const villagers = aliveList.length - wolves;
             let endMsg = null;
-            if(wolves === 0) endMsg = "ชาวบ้านชนะ! 🎊"; else if(wolves >= villagers) endMsg = "หมาป่าครองหมู่บ้าน 🐺";
+            if(wolves === 0) endMsg = "ชาวบ้านชนะ! หมาป่าถูกกำจัด 🎊"; else if(wolves >= villagers) endMsg = "หมาป่าครองหมู่บ้าน 🐺";
             if(endMsg) await updateDoc(doc(db, "rooms", currentRoomId), { phase: "ended", log: endMsg });
         }
 
-        // ระบบ Modal ดูไพ่ตัวเอง
         const modal = document.getElementById('cardModal');
         document.getElementById('topRightBadge').addEventListener('click', () => modal.classList.add('open'));
         document.getElementById('btnCloseModal').addEventListener('click', () => modal.classList.remove('open'));
