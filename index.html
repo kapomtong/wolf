@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Werewolf Online - Tabletop V5</title>
+    <title>Werewolf Online - Ultimate V6</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,68 +20,47 @@
         .show-screen { opacity: 1; transform: scale(1); visibility: visible; z-index: 10; }
         .custom-scrollbar::-webkit-scrollbar { width: 5px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
 
-        /* --- Game Tabletop UI (Circular Layout) --- */
+        /* --- UI ส่วนบนและโต๊ะ (Circular Layout) --- */
         #topRightBadge { position: fixed; top: max(16px, env(safe-area-inset-top)); right: 16px; z-index: 50; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         #topRightBadge:active { transform: scale(0.95); }
-
-        /* พื้นที่โต๊ะวางไพ่ (ใช้สำหรับคำนวณพื้นที่) */
-        #gameTableContainer {
-            flex: 1;
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            margin-top: 70px; /* เว้นที่ให้ Header ด้านบน */
-            margin-bottom: 100px; /* เว้นที่ให้ Bottom bar ด้านล่าง */
-        }
-
-        /* การ์ดผู้เล่น (ใช้ absolute positioning เพื่อจัดเรียงแบบวงกลม) */
+        #gameTableContainer { flex: 1; position: relative; width: 100%; overflow: hidden; margin-top: 70px; margin-bottom: 120px; }
+        
         .player-card {
-            position: absolute; /* สำคัญมากสำหรับการจัดเรียงแบบอิสระ */
-            width: 90px; /* ปรับขนาดให้พอดีมือถือ */
-            height: 120px;
-            border-radius: 12px; cursor: pointer; 
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* เด้งดึ๋งๆ เวลาขยับ */
-            transform-style: preserve-3d; box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
-            border: 2px solid #334155; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden;
-            /* จุดหมุนอยู่ตรงกลางเพื่อการหมุนที่สวยงาม */
+            position: absolute; width: 85px; height: 115px; border-radius: 12px; cursor: pointer; 
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); transform-style: preserve-3d; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 2px solid #334155; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden;
             transform-origin: center center;
         }
         .player-card.selected { border-color: #eab308; box-shadow: 0 0 25px rgba(234, 179, 8, 0.7); z-index: 30 !important; transform: scale(1.15) translateY(-10px) !important; }
         .player-card.dead { filter: grayscale(100%) brightness(0.5) sepia(0.3); border-color: #7f1d1d; pointer-events: none; }
+        .player-card.reveal-anim { animation: revealFlip 1s ease-out forwards; } /* อนิเมชั่นหงายไพ่ตอนจบ */
+        
+        @keyframes revealFlip { 0% { transform: scale(1) rotateY(0deg); } 50% { transform: scale(1.2) rotateY(90deg); box-shadow: 0 0 30px rgba(255,255,255,0.8); } 100% { transform: scale(1) rotateY(0deg); } }
+
         .player-card .name-tag { width: 100%; background: rgba(0,0,0,0.85); text-align: center; padding: 4px 2px; font-size: 0.7rem; font-weight: bold; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; backdrop-filter: blur(5px); border-top: 1px solid rgba(255,255,255,0.1); }
         .player-card .card-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0.9; }
-        .player-card .skull-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; z-index: 3; text-shadow: 0 0 20px red; opacity: 0.9; }
+        .player-card .skull-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2.5rem; z-index: 3; text-shadow: 0 0 20px red; opacity: 0.9; }
 
-        /* --- ดีไซน์หลังไพ่ปริศนา (?) แบบเท่ๆ เงาสวยๆ --- */
-        .unknown-card-face {
-            position: absolute; top:0; left:0; width:100%; height:100%;
-            background: radial-gradient(circle at center, #312e81 0%, #020617 100%); /* ไล่สีม่วงเข้ม */
-            display: flex; justify-content: center; align-items: center;
-            z-index: 1;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-        }
-        .unknown-card-face::after {
-            content: '?';
-            font-size: 4rem; font-weight: 900;
-            /* ทำตัวอักษรให้เป็นสีไล่ระดับและเรืองแสง */
-            background: linear-gradient(to bottom, #a5b4fc, #4338ca);
-            -webkit-background-clip: text; background-clip: text; color: transparent;
-            filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.8));
-            animation: pulse-question 3s infinite ease-in-out; /* อนิเมชั่นวิบวับ */
-        }
-        @keyframes pulse-question {
-            0%, 100% { filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.8)); opacity: 0.8; transform: scale(1); }
-            50% { filter: drop-shadow(0 0 25px rgba(129, 140, 248, 1)); opacity: 1; transform: scale(1.05); }
-        }
+        .unknown-card-face { position: absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at center, #312e81 0%, #020617 100%); display: flex; justify-content: center; align-items: center; z-index: 1; border: 1px solid rgba(99, 102, 241, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        .unknown-card-face::after { content: '?'; font-size: 4rem; font-weight: 900; background: linear-gradient(to bottom, #a5b4fc, #4338ca); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.8)); animation: pulse-question 3s infinite ease-in-out; }
+        @keyframes pulse-question { 0%, 100% { filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.8)); opacity: 0.8; transform: scale(1); } 50% { filter: drop-shadow(0 0 25px rgba(129, 140, 248, 1)); opacity: 1; transform: scale(1.05); } }
 
-        /* --- Other UI Elements --- */
-        #bottomBar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid rgba(255,255,255,0.1); z-index: 40; border-radius: 24px 24px 0 0; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        /* --- Ghost Chat UI (แชทสุสาน) --- */
+        #ghostChatZone { position: fixed; bottom: 120px; right: 16px; width: 280px; max-height: 250px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(168, 85, 247, 0.4); box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); border-radius: 16px; display: flex; flex-direction: column; z-index: 45; backdrop-filter: blur(10px); transition: opacity 0.3s, transform 0.3s; }
+        #ghostChatZone.hidden-chat { opacity: 0; transform: translateY(20px) scale(0.95); pointer-events: none; }
+        .msg-bubble { background: rgba(88, 28, 135, 0.4); padding: 6px 10px; border-radius: 10px; border-bottom-right-radius: 2px; margin-bottom: 6px; font-size: 0.75rem; color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.2); word-wrap: break-word;}
+        .msg-bubble.my-msg { background: rgba(168, 85, 247, 0.4); text-align: right; border-bottom-right-radius: 10px; border-bottom-left-radius: 2px; border-color: rgba(216, 180, 254, 0.3);}
+
+        /* --- Bottom Bar --- */
+        #bottomBar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid rgba(255,255,255,0.1); z-index: 60; border-radius: 24px 24px 0 0; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
         #bottomBar.show { transform: translateY(0); }
+        
         #cardModal { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(15px); padding: 20px;}
         #cardModal.open { opacity: 1; pointer-events: auto; }
         .big-card-img { width: 100%; max-width: 280px; aspect-ratio: 2/3; object-fit: cover; border-radius: 1.5rem; border: 2px solid #ef4444; box-shadow: 0 0 40px rgba(239, 68, 68, 0.4); transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
         #cardModal.open .big-card-img { transform: scale(1); }
+
+        /* Toast */
         #toast-container { position: fixed; top: max(16px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; width: 90%; max-width: 380px; }
         .toast { background: rgba(15, 23, 42, 0.95); border-left: 4px solid #3b82f6; color: white; padding: 14px 16px; border-radius: 12px; transform: translateY(-150%); transition: transform 0.4s; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; font-size: 0.95rem; border: 1px solid rgba(255,255,255,0.05);}
         .toast.show { transform: translateY(0); }
@@ -89,7 +68,6 @@
         .btn-primary { width: 100%; background: linear-gradient(135deg, #ef4444, #991b1b); padding: 1rem; border-radius: 1rem; font-weight: 800; font-size: 1.15rem; transition: all 0.2s; color: white; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3); border: 1px solid rgba(255,255,255,0.1); }
         .btn-primary:active { transform: scale(0.96); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
         .btn-yellow { background: linear-gradient(135deg, #d97706, #b45309); box-shadow: 0 8px 20px rgba(217, 119, 6, 0.3); }
-        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="theme-night">
@@ -99,7 +77,7 @@
     <div id="screen-login" class="screen show-screen items-center justify-center p-6">
         <div class="glass-panel p-8 md:p-10 rounded-[2rem] w-full max-w-sm text-center">
             <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-red-500 to-orange-500 mb-2 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]">WEREWOLF</h1>
-            <p class="text-slate-400 mb-8 font-semibold tracking-widest uppercase text-sm">Tabletop V5</p>
+            <p class="text-slate-400 mb-8 font-semibold tracking-widest uppercase text-sm">ปัจฉิมบำรุงรื่น V6</p>
             <input type="text" id="playerNameInput" placeholder="กรอกชื่อนักเรียน..." class="w-full mb-6 px-4 py-4 bg-slate-900 border border-slate-700 rounded-xl focus:border-red-500 outline-none text-center text-xl font-bold text-white transition-all shadow-inner">
             <button id="btnSaveName" class="btn-primary py-4">เข้าสู่หมู่บ้าน</button>
         </div>
@@ -111,7 +89,7 @@
                 <div class="flex items-center gap-3">
                     <div class="w-11 h-11 bg-indigo-600 rounded-full flex items-center justify-center text-xl shadow-inner border border-indigo-400">🧑‍🎓</div>
                     <div>
-                        <p class="text-[0.65rem] text-slate-400 font-bold uppercase tracking-widest mb-0.5">บัตรประจำตัวนักเรียน</p>
+                        <p class="text-[0.65rem] text-slate-400 font-bold uppercase tracking-widest mb-0.5">นักเรียนปัจฉิม</p>
                         <p id="displayPlayerName" class="font-bold text-white text-lg leading-none truncate max-w-[150px] md:max-w-[250px]"></p>
                     </div>
                 </div>
@@ -137,9 +115,7 @@
                         </div>
                         <button id="btnRefreshServer" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg font-bold text-slate-300 transition-colors">รีเฟรช 🔄</button>
                     </div>
-                    <div id="serverListContainer" class="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-3">
-                        <p class="text-slate-500 text-center mt-10 text-sm font-medium">กำลังค้นหาเซิร์ฟเวอร์...</p>
-                    </div>
+                    <div id="serverListContainer" class="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-3"></div>
                 </div>
             </div>
         </div>
@@ -183,8 +159,19 @@
             </div>
         </div>
 
-        <div id="gameTableContainer">
+        <div id="gameTableContainer"></div>
+
+        <div id="ghostChatZone" class="hidden-chat">
+            <div class="p-3 border-b border-purple-500/40 font-bold text-purple-300 text-sm flex items-center justify-between">
+                <span class="flex items-center gap-2"><span class="animate-pulse text-lg">👻</span> สุสานแชทลับ</span>
+                <span class="text-[0.6rem] bg-purple-900/50 px-2 py-0.5 rounded border border-purple-500/30">ผีเห็นผี</span>
             </div>
+            <div id="ghostChatMessages" class="flex-1 overflow-y-auto p-3 flex flex-col custom-scrollbar"></div>
+            <div class="p-2 flex gap-2 border-t border-purple-500/40 bg-slate-900/50 rounded-b-2xl">
+                <input type="text" id="ghostChatInput" class="w-full bg-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-purple-500 border border-slate-700" placeholder="เมาท์คนเป็นตรงนี้...">
+                <button id="btnSendGhostChat" class="bg-purple-600 hover:bg-purple-500 px-4 rounded-lg font-bold text-xs text-white transition-colors">ส่ง</button>
+            </div>
+        </div>
 
         <div id="bottomBar" class="glass-panel">
             <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-5 opacity-50"></div>
@@ -218,10 +205,19 @@
         const firebaseConfig = { apiKey: "AIzaSyAzA-3TJ4lcNOFUGoOVd8JhExoeIRxSsFU", authDomain: "wolf-ba81b.firebaseapp.com", projectId: "wolf-ba81b", storageBucket: "wolf-ba81b.firebasestorage.app", messagingSenderId: "310182298514", appId: "1:310182298514:web:804e92316d5aca0770b74b" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app);
 
+        // --- ระบบ SFX เสียงประกอบ ---
+        const sfx = {
+            night: new Audio('https://www.myinstants.com/media/sounds/wolf-howl.mp3'),
+            day: new Audio('https://www.myinstants.com/media/sounds/rooster.mp3'),
+            vote: new Audio('https://www.myinstants.com/media/sounds/dun-dun-dun.mp3'),
+            end: new Audio('https://www.myinstants.com/media/sounds/victory_1.mp3')
+        };
+        Object.values(sfx).forEach(a => a.volume = 0.5); // ตั้งระดับเสียงกลางๆ
+
         let currentUser = localStorage.getItem('ww_name') || "";
         let currentRoomId = null; let unsubscribeRoom = null; let unsubscribeServers = null; 
         let isHost = false; let myRole = ""; let isDead = false;
-        let selectedTarget = null; let currentPhase = ""; let currentActionType = null;
+        let selectedTarget = null; let currentPhase = ""; let previousPhase = ""; let currentActionType = null;
 
         const roleData = {
             "มนุษย์หมาป่า": { img: "มนุษย์หมาป่า.jpg", desc: "ตื่นมาตอนกลางคืนเพื่อร่วมกันเลือกกัดเหยื่อ 1 คน" },
@@ -285,13 +281,13 @@
             });
         };
 
-        document.getElementById('btnCreateRoom').addEventListener('click', async () => { const roomId = Math.random().toString(36).substring(2, 8).toUpperCase(); await setDoc(doc(db, "rooms", roomId), { name: document.getElementById('roomNameInput').value || `โต๊ะของ ${currentUser}`, host: currentUser, maxPlayers: parseInt(document.getElementById('playerCount').value), status: "waiting", players: [currentUser], alive: [currentUser], roles: {}, phase: "setup", dayCount: 1, actions: {}, votes: {}, log: "พร้อมแจกไพ่" }); joinRoom(roomId); });
-        const leaveRoom = async () => { if(currentRoomId) { try { const ref = doc(db, "rooms", currentRoomId); const snap = await getDoc(ref); if (snap.exists() && snap.data().status === 'waiting') { const data = snap.data(); await updateDoc(ref, { players: data.players.filter(p => p !== currentUser), alive: data.alive.filter(p => p !== currentUser) }); } } catch(e) {} } if(unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; } currentRoomId = null; showScreen('screen-lobby'); };
+        document.getElementById('btnCreateRoom').addEventListener('click', async () => { const roomId = Math.random().toString(36).substring(2, 8).toUpperCase(); await setDoc(doc(db, "rooms", roomId), { name: document.getElementById('roomNameInput').value || `โต๊ะของ ${currentUser}`, host: currentUser, maxPlayers: parseInt(document.getElementById('playerCount').value), status: "waiting", players: [currentUser], alive: [currentUser], roles: {}, phase: "setup", dayCount: 1, actions: {}, votes: {}, ghostChat: [], log: "พร้อมแจกไพ่" }); joinRoom(roomId); });
+        const leaveRoom = async () => { if(currentRoomId) { try { const ref = doc(db, "rooms", currentRoomId); const snap = await getDoc(ref); if (snap.exists() && snap.data().status === 'waiting') { const data = snap.data(); await updateDoc(ref, { players: data.players.filter(p => p !== currentUser), alive: data.alive.filter(p => p !== currentUser) }); } } catch(e) {} } if(unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; } currentRoomId = null; previousPhase = ""; showScreen('screen-lobby'); };
         document.getElementById('btnLeaveRoom').addEventListener('click', leaveRoom);
         document.getElementById('btnStartGame').addEventListener('click', async () => { const ref = doc(db, "rooms", currentRoomId); const snap = await getDoc(ref); const players = snap.data().players; let shuffledDeck = generateDeck(players.length); let shuffledPlayers = cryptoShuffle(players); let rolesMap = {}; shuffledPlayers.forEach((p, i) => rolesMap[p] = shuffledDeck[i]); await updateDoc(ref, { status: "playing", phase: "night", roles: rolesMap, log: "เข้าสู่คืนแรก... หมู่บ้านหลับใหล" }); });
 
         // ==========================================
-        // The Tabletop Engine (Circular Layout V5)
+        // The Tabletop Engine V6 (God Mode)
         // ==========================================
         function handleGameEngine(data) {
             showScreen('screen-gameplay');
@@ -299,12 +295,25 @@
             myRole = data.roles[currentUser] || "ชาวบ้าน";
             isDead = !data.alive.includes(currentUser);
 
+            // Play SFX on Phase change
+            if (currentPhase !== previousPhase && previousPhase !== "setup") {
+                try {
+                    if (currentPhase === 'night') sfx.night.play();
+                    else if (currentPhase === 'day') sfx.day.play();
+                    else if (currentPhase === 'voting') sfx.vote.play();
+                    else if (currentPhase === 'ended') sfx.end.play();
+                } catch(e) { console.log("Audio block by browser"); }
+                previousPhase = currentPhase;
+            } else if (previousPhase === "") {
+                previousPhase = currentPhase; // set initial
+            }
+
             const badgeRole = document.getElementById('myBadgeRoleName');
             const badgeContainer = document.getElementById('topRightBadge');
             badgeRole.textContent = isDead ? "วิญญาณ 👻" : myRole;
             
             if(myRole === "มนุษย์หมาป่า" && !isDead) badgeContainer.className = "bg-gradient-to-br from-red-800 to-red-950 px-5 py-2.5 rounded-2xl border border-red-500 flex flex-col items-center shadow-[0_0_15px_rgba(239,68,68,0.4)] pointer-events-auto";
-            else if (isDead) badgeContainer.className = "bg-gradient-to-br from-purple-800 to-slate-900 px-5 py-2.5 rounded-2xl border border-purple-500 flex flex-col items-center shadow-lg pointer-events-auto";
+            else if (isDead) badgeContainer.className = "bg-gradient-to-br from-purple-800 to-slate-900 px-5 py-2.5 rounded-2xl border border-purple-500 flex flex-col items-center shadow-[0_0_15px_rgba(168,85,247,0.4)] pointer-events-auto";
             else badgeContainer.className = "bg-gradient-to-br from-slate-700 to-slate-900 px-5 py-2.5 rounded-2xl border border-slate-500 flex flex-col items-center shadow-lg pointer-events-auto";
 
             const rData = roleData[myRole] || roleData["ชาวบ้าน"];
@@ -320,8 +329,17 @@
             document.getElementById('btnConfirmAction').classList.add('hidden');
             document.getElementById('bottomBar').classList.add('show');
 
-            // เรียกใช้ฟังก์ชันวาดโต๊ะแบบวงกลม
+            // Render Table (Reveal All at endgame)
             renderCircularTable(data);
+
+            // Ghost Chat Logic
+            const ghostZone = document.getElementById('ghostChatZone');
+            if (isDead && currentPhase !== "ended") {
+                ghostZone.classList.remove('hidden-chat');
+                renderGhostChat(data.ghostChat || []);
+            } else {
+                ghostZone.classList.add('hidden-chat');
+            }
 
             const actionTitle = document.getElementById('bottomActionTitle');
             const actionDesc = document.getElementById('bottomActionDesc');
@@ -364,49 +382,36 @@
                     document.getElementById('hostTools').classList.remove('hidden');
                     document.getElementById('btnHostAction').classList.add('hidden');
                     document.getElementById('btnHostNewGame').classList.remove('hidden');
-                    document.getElementById('btnHostNewGame').onclick = () => updateDoc(doc(db, "rooms", currentRoomId), { status: "waiting", phase: "setup", alive: data.players, actions: {}, votes: {} });
+                    document.getElementById('btnHostNewGame').onclick = () => updateDoc(doc(db, "rooms", currentRoomId), { status: "waiting", phase: "setup", alive: data.players, actions: {}, votes: {}, ghostChat: [] });
                 }
             }
         }
 
-        // ==========================================
-        // ระบบคำนวณตำแหน่งการ์ดแบบวงกลม (The Magic)
-        // ==========================================
         function renderCircularTable(data) {
             const container = document.getElementById('gameTableContainer');
-            container.innerHTML = ''; // เคลียร์ของเก่า
+            container.innerHTML = ''; 
 
             const totalPlayers = data.players.length;
-            // คำนวณจุดศูนย์กลางและรัศมีของวงกลมตามขนาดหน้าจอ
-            const containerWidth = container.offsetWidth;
-            const containerHeight = container.offsetHeight;
-            const centerX = containerWidth / 2;
-            const centerY = containerHeight / 2;
-            // รัศมี = ครึ่งหนึ่งของด้านที่สั้นที่สุด ลบด้วยเผื่อขอบนิดหน่อย
-            const radius = Math.min(containerWidth, containerHeight) / 2 - 55; 
-            
-            const angleStep = (2 * Math.PI) / totalPlayers; // มุมระหว่างผู้เล่นแต่ละคน
+            const containerWidth = container.offsetWidth; const containerHeight = container.offsetHeight;
+            const centerX = containerWidth / 2; const centerY = containerHeight / 2;
+            const radius = Math.min(containerWidth, containerHeight) / 2 - 50; 
+            const angleStep = (2 * Math.PI) / totalPlayers;
 
             data.players.forEach((p, index) => {
                 const isAlive = data.alive.includes(p);
                 const roleImg = roleData[data.roles[p]]?.img || "ชาวบ้าน.jpg";
-                // เงื่อนไขการโชว์ไพ่ (ตาย/วิญญาณ/ตัวเอง)
-                const showCard = (!isAlive || isDead || p === currentUser);
-                
-                // === คำนวณตรีโกณมิติ ===
-                // เริ่มที่มุมล่าง (-PI/2 คือบนสุด, เราเริ่มที่ PI/2 คือล่างสุดเพื่อให้ตัวเองอยู่ใกล้)
+                // 🎭 เผยไพ่ตอนจบเกม หรือ เป็นไพ่ตัวเอง หรือ เป็นวิญญาณ 
+                const showCard = (!isAlive || isDead || p === currentUser || currentPhase === "ended");
+                const isRevealAnim = (currentPhase === "ended" && isAlive); // ใส่เอฟเฟกต์เฉพาะคนที่เพิ่งโดนเปิดไพ่ตอนจบ
+
                 const angle = index * angleStep + (Math.PI / 2);
-                // คำนวณตำแหน่ง X, Y จากจุดศูนย์กลาง (ลบครึ่งหนึ่งของขนาดการ์ด เพื่อให้จุดหมุนอยู่ตรงกลางการ์ด)
-                const left = centerX + radius * Math.cos(angle) - 45; // 45 = ครึ่งของ width 90px
-                const top = centerY + radius * Math.sin(angle) - 60;  // 60 = ครึ่งของ height 120px
+                const left = centerX + radius * Math.cos(angle) - 42.5; 
+                const top = centerY + radius * Math.sin(angle) - 57.5;  
 
                 const cardElement = document.createElement('div');
-                cardElement.className = `player-card ${isAlive ? '' : 'dead'}`;
+                cardElement.className = `player-card ${isAlive ? '' : 'dead'} ${isRevealAnim ? 'reveal-anim' : ''}`;
                 cardElement.dataset.name = p;
-                // กำหนดตำแหน่งแบบ Absolute
-                cardElement.style.left = `${left}px`;
-                cardElement.style.top = `${top}px`;
-                // หมุนการ์ดให้หันเข้าหาจุดศูนย์กลางเล็กน้อย เพื่อความสมจริง
+                cardElement.style.left = `${left}px`; cardElement.style.top = `${top}px`;
                 const rotation = (angle * 180 / Math.PI) - 90;
                 cardElement.style.transform = `rotate(${rotation}deg)`;
 
@@ -418,7 +423,6 @@
 
                 container.appendChild(cardElement);
 
-                // เพิ่ม Event Listener สำหรับกดการ์ด
                 cardElement.addEventListener('click', function() {
                     const targetName = this.dataset.name;
                     if(isDead || !data.alive.includes(targetName) || !currentActionType) return;
@@ -431,19 +435,37 @@
             });
         }
 
+        // Ghost Chat Sender
+        document.getElementById('btnSendGhostChat').addEventListener('click', async () => {
+            const input = document.getElementById('ghostChatInput');
+            const txt = input.value.trim();
+            if(txt && currentRoomId) {
+                input.value = '';
+                await updateDoc(doc(db, "rooms", currentRoomId), {
+                    ghostChat: arrayUnion({name: currentUser, msg: txt})
+                });
+            }
+        });
+
+        function renderGhostChat(messages) {
+            const chatBox = document.getElementById('ghostChatMessages');
+            chatBox.innerHTML = messages.map(m => {
+                const isMe = m.name === currentUser;
+                return `<div class="msg-bubble ${isMe ? 'my-msg' : ''}"><span class="font-bold text-purple-400">${isMe ? 'ฉัน' : m.name}:</span> ${m.msg}</div>`;
+            }).join('');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
         function setTheme(themeName) { document.body.className = themeName; }
 
         function setupAction(title, desc, type) {
-            currentActionType = type;
-            document.getElementById('bottomActionTitle').textContent = title;
-            document.getElementById('bottomActionDesc').textContent = desc;
+            currentActionType = type; document.getElementById('bottomActionTitle').textContent = title; document.getElementById('bottomActionDesc').textContent = desc;
             document.getElementById('btnConfirmAction').onclick = () => submitAction(type);
         }
 
         async function submitAction(type) {
             document.getElementById('btnConfirmAction').classList.add('hidden');
             const ref = doc(db, "rooms", currentRoomId);
-            
             if(type === "check") {
                 const docSnap = await getDoc(ref); const role = docSnap.data().roles[selectedTarget];
                 const isWolf = role === "มนุษย์หมาป่า"; 
@@ -451,7 +473,6 @@
                 await updateDoc(ref, { [`actions.${currentUser}`]: "checked" });
             } else if (type === "vote") await updateDoc(ref, { [`votes.${currentUser}`]: selectedTarget });
             else await updateDoc(ref, { [`actions.${currentUser}`]: { type: type, target: selectedTarget } });
-            
             document.querySelectorAll('.player-card').forEach(c => c.classList.remove('selected'));
         }
 
